@@ -1,5 +1,10 @@
 ﻿{
   "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "base",
@@ -11,7 +16,9 @@
         "VCPKG_FEATURE_FLAGS": "manifests,versions,binarycaching,registries"
       },
       "cacheVariables": {
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/extern/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
       }
     },
     {
@@ -51,7 +58,8 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
