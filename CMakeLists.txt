@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include sub-projects.
-add_subdirectory ("bbtcompiler")
+add_subdirectory ("apps/bbtcompiler")
 
 find_package(Catch2 REQUIRED)
 add_executable(tests "tests/testsmain.cpp")
