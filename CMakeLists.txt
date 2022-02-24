@@ -4,14 +4,21 @@
 cmake_minimum_required (VERSION 3.20)
 project ("bbtcompiler" LANGUAGES CXX VERSION 0.0.1)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Include sub-projects.
+#===============Libraries===============
+add_subdirectory(libs/bbtcompilerlib)
+
+#===============Applications============
 add_subdirectory ("apps/bbtcompiler")
+target_link_libraries(bbtcompiler PRIVATE bbtcompilerlib)
+target_include_directories(bbtcompiler PRIVATE libs/bbtcompilerlib)
 
+#===============Tests===================
 find_package(Catch2 REQUIRED)
-add_executable(tests "tests/testsmain.cpp")
-target_link_libraries(tests PRIVATE Catch2::Catch2)
+add_executable(tests "tests/testsmain.cpp" "tests/testlexer.cpp")
+target_link_libraries(tests PRIVATE Catch2::Catch2 bbtcompilerlib)
+target_include_directories(tests PRIVATE libs/bbtcompilerlib)
 
 include(CTest)
 include(Catch)
