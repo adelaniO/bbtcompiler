@@ -71,3 +71,46 @@ TEST_CASE("LexerString", "[Literals]")
     CHECK(tokens[2].value == "gh\"i");
     CHECK(tokens[2].type == TokenType::STRING_LITERAL);
 }
+
+TEST_CASE("LexerBinaryOperators", "[Operators]")
+{
+    std::stringstream ss("1+1.0");
+    Lexer lexer;
+    const auto& tokens = lexer.getTokens();
+    lexer.parse(ss);
+    REQUIRE(tokens.size() == 3);
+    CHECK(tokens[0].value == "1");
+    CHECK(tokens[0].type == TokenType::INT_LITERAL);
+    CHECK(tokens[1].value == "+");
+    CHECK(tokens[1].type == TokenType::OPERATOR);
+    CHECK(tokens[2].value == "1.0");
+    CHECK(tokens[2].type == TokenType::FLOAT_LITERAL);
+ 
+    lexer.clear();
+    ss = std::stringstream("15.2 /=\"string\"");
+    lexer.parse(ss);
+    REQUIRE(tokens.size() == 4);
+    CHECK(tokens[0].value == "15.2");
+    CHECK(tokens[0].type == TokenType::FLOAT_LITERAL);
+    CHECK(tokens[1].value == "/");
+    CHECK(tokens[1].type == TokenType::OPERATOR);
+    CHECK(tokens[2].value == "=");
+    CHECK(tokens[2].type == TokenType::OPERATOR);
+    CHECK(tokens[3].value == "string");
+    CHECK(tokens[3].type == TokenType::STRING_LITERAL);
+}
+
+//TEST_CASE("LexerUnaryOperators", "[Operators]")
+//{
+//    REQUIRE(false);
+//}
+
+//TEST_CASE("LexerKeywords", "[Keywords]")
+//{
+//    REQUIRE(false);
+//}
+
+//TEST_CASE("LexerComments", "[Comments]")
+//{
+//    REQUIRE(false);
+//}

@@ -17,7 +17,7 @@ namespace BBTCompiler
 
     void Lexer::parse(std::istream& stream)
     {
-        m_Position = Position{ 0, 1 };
+        m_Position = Position{ 1, 0 };
         char currentChar;
         char nextChar;
         while(stream >> std::noskipws >> currentChar)
@@ -36,6 +36,13 @@ namespace BBTCompiler
                 if(currentChar == '"')
                 {
                     m_State = LexerState::STRING;
+                    continue;
+                }
+                if(isOperator(currentChar))
+                {
+                    m_State = LexerState::OPERATOR;
+                    m_CurrentToken.value += currentChar;
+                    processToken(m_CurrentToken);
                     continue;
                 }
             }
@@ -63,8 +70,9 @@ namespace BBTCompiler
             {
                 if(currentChar == '.' || !std::isdigit(currentChar))
                 {
-                    m_State = LexerState::ERROR;
-                    return;
+                    processToken(m_CurrentToken);
+                    stream.unget();
+                    continue;
                 }
             }
             if(m_State == LexerState::INT)
@@ -75,8 +83,9 @@ namespace BBTCompiler
                 }
                 else if(!std::isdigit(currentChar))
                 {
-                    m_State = LexerState::ERROR;
-                    return;
+                    processToken(m_CurrentToken);
+                    stream.unget();
+                    continue;
                 }
             }
             m_CurrentToken.value += currentChar;
@@ -104,7 +113,12 @@ namespace BBTCompiler
         {
             token.type = TokenType::STRING_LITERAL;
         }
+        else if(m_State == LexerState::OPERATOR)
+        {
+            token.type = TokenType::OPERATOR;
+        }
         token.position = m_Position;
+        token.position.column-= token.value.size();
         m_Tokens.push_back(token);
         token = Token{};
         m_State = LexerState::NORMAL;

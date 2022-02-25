@@ -15,11 +15,11 @@ namespace BBTCompiler
         "class","constructor","function","method","field","static","var","int","char","boolean","void","true","false","null","this","let","do","if","else","while","return"
     };
 
-    const std::unordered_set<unsigned char>Symbols{
-        '{','}','(',')','[',']','.',',',';','+','-','*','/','&','|','<','>','=','-','~'
+    const std::unordered_set<unsigned char> Operators{
+        '{','}','(',')','[',']','.',',',';','+','-','*','/','&','<','>','=','-'
     };
 
-    enum class TokenType { INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, SYMBOL, KEYWORD, IDENTIFIER, INVALID };
+    enum class TokenType { INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, OPERATOR, KEYWORD, IDENTIFIER, INVALID };
     struct Token
     {
         TokenType type{ TokenType::INVALID };
@@ -27,7 +27,7 @@ namespace BBTCompiler
         std::string value{};
     };
 
-    enum class LexerState { NORMAL, LINE_COMMENT, BLOCK_COMMENT, STRING, INT, FLOAT, ERROR };
+    enum class LexerState { NORMAL, LINE_COMMENT, BLOCK_COMMENT, STRING, INT, FLOAT, OPERATOR, ERROR };
 
     class Lexer
     {
@@ -48,5 +48,6 @@ namespace BBTCompiler
         bool isFloat(std::string_view word);
         bool isString(std::string_view word);
         void incrementPosition(size_t column, size_t line = 0);
+        bool isOperator(unsigned char c) { return Operators.find(c) != Operators.end(); }
     };
 }
