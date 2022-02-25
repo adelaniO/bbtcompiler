@@ -100,17 +100,17 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     CHECK(tokens[3].type == TokenType::STRING_LITERAL);
 }
 
-//TEST_CASE("LexerUnaryOperators", "[Operators]")
-//{
-//    REQUIRE(false);
-//}
-
-//TEST_CASE("LexerKeywords", "[Keywords]")
-//{
-//    REQUIRE(false);
-//}
-
-//TEST_CASE("LexerComments", "[Comments]")
-//{
-//    REQUIRE(false);
-//}
+TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
+{
+    std::stringstream ss("class test void");
+    Lexer lexer;
+    const auto& tokens = lexer.getTokens();
+    lexer.parse(ss);
+    REQUIRE(tokens.size() == 3);
+    CHECK(tokens[0].value == "class");
+    CHECK(tokens[0].type == TokenType::KEYWORD);
+    CHECK(tokens[1].value == "test");
+    CHECK(tokens[1].type == TokenType::IDENTIFIER);
+    CHECK(tokens[2].value == "void");
+    CHECK(tokens[2].type == TokenType::KEYWORD);
+}

@@ -101,6 +101,13 @@ namespace BBTCompiler
             m_State = LexerState::NORMAL;
             return;
         }
+        if(m_State == LexerState::NORMAL)
+        {
+            if(isKeyword(token.value))
+                token.type = TokenType::KEYWORD;
+            else
+                token.type = TokenType::IDENTIFIER;
+        }
         else if(isInt(token.value) && m_State == LexerState::INT)
         {
             token.type = TokenType::INT_LITERAL;
