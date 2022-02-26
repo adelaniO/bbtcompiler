@@ -29,7 +29,7 @@ namespace BBTCompiler
                 processToken(m_CurrentToken);
                 continue;
             }
-            if(m_State == LexerState::NORMAL)
+            else if(m_State == LexerState::NORMAL)
             {
                 if(std::isdigit(currentChar))
                     m_State = LexerState::INT;
@@ -40,13 +40,14 @@ namespace BBTCompiler
                 }
                 if(isOperator(currentChar))
                 {
+                    processToken(m_CurrentToken); // Process what was before
                     m_State = LexerState::OPERATOR;
                     m_CurrentToken.value += currentChar;
                     processToken(m_CurrentToken);
                     continue;
                 }
             }
-            if(m_State == LexerState::STRING)
+            else if(m_State == LexerState::STRING)
             {
                 if(currentChar == '\\')
                 {
@@ -66,7 +67,7 @@ namespace BBTCompiler
                     continue;
                 }
             }
-            if(m_State == LexerState::FLOAT)
+            else if(m_State == LexerState::FLOAT)
             {
                 if(currentChar == '.' || !std::isdigit(currentChar))
                 {
@@ -75,7 +76,7 @@ namespace BBTCompiler
                     continue;
                 }
             }
-            if(m_State == LexerState::INT)
+            else if(m_State == LexerState::INT)
             {
                 if(currentChar == '.')
                 {

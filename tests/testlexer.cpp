@@ -85,7 +85,7 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     CHECK(tokens[1].type == TokenType::OPERATOR);
     CHECK(tokens[2].value == "1.0");
     CHECK(tokens[2].type == TokenType::FLOAT_LITERAL);
- 
+
     lexer.clear();
     ss = std::stringstream("15.2 /=\"string\"");
     lexer.parse(ss);
@@ -114,3 +114,23 @@ TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
     CHECK(tokens[2].value == "void");
     CHECK(tokens[2].type == TokenType::KEYWORD);
 }
+
+TEST_CASE("LexerFunctions", "[functions]")
+{
+    const char* mainFunctionStr = R"(
+    int main(int argc, const char* argv[])
+    {
+        return 0;
+    }
+)";
+    std::stringstream ss(mainFunctionStr);
+    Lexer lexer;
+    const auto& tokens = lexer.getTokens();
+    lexer.parse(ss);
+    REQUIRE(tokens.size() == 18);
+}
+
+//TEST_CASE("LexerComments", "[Comments]")
+//{
+//    REQUIRE(false);
+//}
