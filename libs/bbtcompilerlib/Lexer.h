@@ -12,7 +12,11 @@ namespace BBTCompiler
     };
 
     const std::unordered_set<std::string> Keywords{
-        "class","constructor","function","method","field","static","var","int","char","boolean","void","true","false","null","this","let","do","if","else","while","return"
+        "do","if","else","while","continue","break",
+        "int","char","boolean","long","float",
+        "const","static","void",
+        "true","false","null",
+        "case","switch","return"
     };
 
     const std::unordered_set<unsigned char> Operators{

@@ -128,6 +128,42 @@ TEST_CASE("LexerFunctions", "[functions]")
     const auto& tokens = lexer.getTokens();
     lexer.parse(ss);
     REQUIRE(tokens.size() == 18);
+    CHECK(tokens[0].value == "int");
+    CHECK(tokens[0].type == TokenType::KEYWORD);
+    CHECK(tokens[1].value == "main");
+    CHECK(tokens[1].type == TokenType::IDENTIFIER);
+    CHECK(tokens[2].value == "(");
+    CHECK(tokens[2].type == TokenType::OPERATOR);
+    CHECK(tokens[3].value == "int");
+    CHECK(tokens[3].type == TokenType::KEYWORD);
+    CHECK(tokens[4].value == "argc");
+    CHECK(tokens[4].type == TokenType::IDENTIFIER);
+    CHECK(tokens[5].value == ",");
+    CHECK(tokens[5].type == TokenType::OPERATOR);
+    CHECK(tokens[6].value == "const");
+    CHECK(tokens[6].type == TokenType::KEYWORD);
+    CHECK(tokens[7].value == "char");
+    CHECK(tokens[7].type == TokenType::KEYWORD);
+    CHECK(tokens[8].value == "*");
+    CHECK(tokens[8].type == TokenType::OPERATOR);
+    CHECK(tokens[9].value == "argv");
+    CHECK(tokens[9].type == TokenType::IDENTIFIER);
+    CHECK(tokens[10].value == "[");
+    CHECK(tokens[10].type == TokenType::OPERATOR);
+    CHECK(tokens[11].value == "]");
+    CHECK(tokens[11].type == TokenType::OPERATOR);
+    CHECK(tokens[12].value == ")");
+    CHECK(tokens[13].type == TokenType::OPERATOR);
+    CHECK(tokens[13].value == "{");
+    CHECK(tokens[13].type == TokenType::OPERATOR);
+    CHECK(tokens[14].value == "return");
+    CHECK(tokens[14].type == TokenType::KEYWORD);
+    CHECK(tokens[15].value == "0");
+    CHECK(tokens[15].type == TokenType::INT_LITERAL);
+    CHECK(tokens[16].value == ";");
+    CHECK(tokens[16].type == TokenType::OPERATOR);
+    CHECK(tokens[17].value == "}");
+    CHECK(tokens[17].type == TokenType::OPERATOR);
 }
 
 //TEST_CASE("LexerComments", "[Comments]")
