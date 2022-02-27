@@ -51,6 +51,7 @@ namespace BBTCompiler
         bool isInt(std::string_view word);
         bool isFloat(std::string_view word);
         bool isString(std::string_view word);
+        void setPosition(size_t column, size_t line);
         void incrementPosition(size_t column, size_t line = 0);
         bool isOperator(unsigned char c) { return Operators.find(c) != Operators.end(); }
         bool isKeyword(const std::string& word) { return Keywords.find(word) != Keywords.end(); }

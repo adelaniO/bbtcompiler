@@ -24,6 +24,10 @@ namespace BBTCompiler
         {
             incrementPosition(1);
             nextChar = stream.peek();
+            if(currentChar == '\n')
+            {
+                setPosition(0, m_Position.line + 1);
+            }
             if(std::isspace(currentChar) && m_State != LexerState::LINE_COMMENT && m_State != LexerState::BLOCK_COMMENT)
             {
                 processToken(m_CurrentToken);
@@ -162,6 +166,12 @@ namespace BBTCompiler
         if(word.front() != '"' && word.back() != '"')
             return false;
         return true;
+    }
+
+    void Lexer::setPosition(size_t column, size_t line)
+    {
+        m_Position.column = column;
+        m_Position.line = line;
     }
 
     void Lexer::incrementPosition(size_t column, size_t line)
