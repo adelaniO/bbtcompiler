@@ -102,12 +102,12 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
 
 TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
 {
-    std::stringstream ss("class test void");
+    std::stringstream ss("if test void");
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.parse(ss);
     REQUIRE(tokens.size() == 3);
-    CHECK(tokens[0].value == "class");
+    CHECK(tokens[0].value == "if");
     CHECK(tokens[0].type == TokenType::KEYWORD);
     CHECK(tokens[1].value == "test");
     CHECK(tokens[1].type == TokenType::IDENTIFIER);
