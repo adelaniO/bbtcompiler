@@ -5,6 +5,7 @@
 
 using BBTCompiler::Lexer;
 using BBTCompiler::TokenType;
+using BBTCompiler::Position;
 
 TEST_CASE("LexerInteger", "[Literals]")
 {
@@ -130,40 +131,58 @@ TEST_CASE("LexerFunctions", "[functions]")
     REQUIRE(tokens.size() == 18);
     CHECK(tokens[0].value == "int");
     CHECK(tokens[0].type == TokenType::KEYWORD);
+    CHECK(tokens[0].position.line == 2); CHECK(tokens[0].position.column == 5);
     CHECK(tokens[1].value == "main");
     CHECK(tokens[1].type == TokenType::IDENTIFIER);
+    CHECK(tokens[1].position.line == 2); CHECK(tokens[1].position.column == 9);
     CHECK(tokens[2].value == "(");
     CHECK(tokens[2].type == TokenType::OPERATOR);
+    CHECK(tokens[2].position.line == 2); CHECK(tokens[2].position.column == 13);
     CHECK(tokens[3].value == "int");
     CHECK(tokens[3].type == TokenType::KEYWORD);
+    CHECK(tokens[3].position.line == 2); CHECK(tokens[3].position.column == 14);
     CHECK(tokens[4].value == "argc");
     CHECK(tokens[4].type == TokenType::IDENTIFIER);
+    CHECK(tokens[4].position.line == 2); CHECK(tokens[4].position.column == 18);
     CHECK(tokens[5].value == ",");
     CHECK(tokens[5].type == TokenType::OPERATOR);
+    CHECK(tokens[5].position.line == 2); CHECK(tokens[5].position.column == 22);
     CHECK(tokens[6].value == "const");
     CHECK(tokens[6].type == TokenType::KEYWORD);
+    CHECK(tokens[6].position.line == 2); CHECK(tokens[6].position.column == 24);
     CHECK(tokens[7].value == "char");
     CHECK(tokens[7].type == TokenType::KEYWORD);
+    CHECK(tokens[7].position.line == 2); CHECK(tokens[7].position.column == 30);
     CHECK(tokens[8].value == "*");
     CHECK(tokens[8].type == TokenType::OPERATOR);
+    CHECK(tokens[8].position.line == 2); CHECK(tokens[8].position.column == 34);
     CHECK(tokens[9].value == "argv");
     CHECK(tokens[9].type == TokenType::IDENTIFIER);
+    CHECK(tokens[9].position.line == 2); CHECK(tokens[9].position.column == 36);
     CHECK(tokens[10].value == "[");
     CHECK(tokens[10].type == TokenType::OPERATOR);
+    CHECK(tokens[10].position.line == 2); CHECK(tokens[10].position.column == 40);
     CHECK(tokens[11].value == "]");
     CHECK(tokens[11].type == TokenType::OPERATOR);
+    CHECK(tokens[11].position.line == 2); CHECK(tokens[11].position.column == 41);
     CHECK(tokens[12].value == ")");
-    CHECK(tokens[13].type == TokenType::OPERATOR);
+    CHECK(tokens[12].type == TokenType::OPERATOR);
+    CHECK(tokens[12].position.line == 2); CHECK(tokens[12].position.column == 42);
     CHECK(tokens[13].value == "{");
     CHECK(tokens[13].type == TokenType::OPERATOR);
+    CHECK(tokens[13].position.line == 3); CHECK(tokens[13].position.column == 5);
     CHECK(tokens[14].value == "return");
     CHECK(tokens[14].type == TokenType::KEYWORD);
+    CHECK(tokens[14].position.line == 4); CHECK(tokens[14].position.column == 9);
     CHECK(tokens[15].value == "0");
     CHECK(tokens[15].type == TokenType::INT_LITERAL);
+    CHECK(tokens[15].position.line == 4); CHECK(tokens[15].position.column == 16);
     CHECK(tokens[16].value == ";");
     CHECK(tokens[16].type == TokenType::OPERATOR);
+    CHECK(tokens[16].position.line == 4); CHECK(tokens[16].position.column == 17);
     CHECK(tokens[17].value == "}");
     CHECK(tokens[17].type == TokenType::OPERATOR);
+    CHECK(tokens[17].position.line == 5); CHECK(tokens[17].position.column == 5);
 }
 
 //TEST_CASE("LexerComments", "[Comments]")
