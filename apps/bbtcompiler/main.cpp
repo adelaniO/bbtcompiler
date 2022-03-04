@@ -13,7 +13,7 @@ void processFile(const char* filepath)
     BBTCompiler::Lexer lexer;
     std::ifstream fileStream(filepath);
     if(fileStream)
-        lexer.parse(fileStream);
+        lexer.scan(fileStream);
 };
 
 int main(int argc, char* argv[])

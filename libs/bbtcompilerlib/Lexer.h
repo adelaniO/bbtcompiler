@@ -2,13 +2,14 @@
 #include <istream>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 namespace BBTCompiler
 {
-    struct Position
+    struct TokenPosition
     {
-        size_t line{ std::numeric_limits<size_t>::max() };
-        size_t column{ std::numeric_limits<size_t>::max() };
+        size_t line{ 1 };
+        size_t column{ 1 };
     };
 
     const std::unordered_set<std::string> Keywords{
@@ -23,11 +24,16 @@ namespace BBTCompiler
         '{','}','(',')','[',']','.',',',';','+','-','*','/','&','<','>','=','-'
     };
 
+    const std::unordered_map<unsigned char, std::unordered_set<unsigned char>> PairedOperators{
+        { '+', {'+','='} },
+        { '-', {'-','='} }
+    };
+
     enum class TokenType { INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, OPERATOR, KEYWORD, IDENTIFIER, INVALID };
     struct Token
     {
         TokenType type{ TokenType::INVALID };
-        Position position{};
+        TokenPosition position{};
         std::string value{};
     };
 
@@ -36,24 +42,27 @@ namespace BBTCompiler
     class Lexer
     {
     public:
-        void parse(std::istream& stream);
-        void processToken(Token& token);
+        void scan(std::istream& stream);
         std::vector<Token>& getTokens() { return m_Tokens; }
         const std::vector<Token>& getTokens() const { return m_Tokens; }
         void clear();
     private:
         Token m_CurrentToken;
+        unsigned char m_CurrentChar;
         std::vector<Token> m_Tokens;
-        Position m_Position{};
-        bool m_IsInSingleLineComment{}, m_IsInMultiLineComment{};
+        TokenPosition m_Position{};
         LexerState m_State{ LexerState::NORMAL };
 
-        bool isInt(std::string_view word);
-        bool isFloat(std::string_view word);
-        bool isString(std::string_view word);
-        void setPosition(size_t column, size_t line);
-        void incrementPosition(size_t column, size_t line = 0);
-        bool isOperator(unsigned char c) { return Operators.find(c) != Operators.end(); }
-        bool isKeyword(const std::string& word) { return Keywords.find(word) != Keywords.end(); }
+        Token& newToken(TokenType type, TokenPosition position);
+        void processNumLiteral(std::istream& stream);
+        void processStringLiteral(std::istream& stream);
+        void processOperator(std::istream& stream);
+        void processIdentifier(std::istream& stream);
+
+        bool isOperator(unsigned char c);
+        bool isPairedOperator(unsigned char a, unsigned char b);
+        bool isKeyword(const std::string& word);
+        void incrementLine(int count = 1);
+        void incrementColumn(int count = 1);
     };
 }

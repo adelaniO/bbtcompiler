@@ -9,174 +9,148 @@ namespace BBTCompiler
     void Lexer::clear()
     {
         m_Tokens.clear();
-        m_IsInMultiLineComment = false;
-        m_IsInSingleLineComment = false;
         m_CurrentToken = Token{}; 
         m_State = LexerState::NORMAL;
+        m_Position = TokenPosition{ 1, 1 };
     }
 
-    void Lexer::parse(std::istream& stream)
+    void Lexer::scan(std::istream& stream)
     {
-        m_Position = Position{ 1, 0 };
-        char currentChar;
-        char nextChar;
-        while(stream >> std::noskipws >> currentChar)
-        {
-            incrementPosition(1);
-            nextChar = stream.peek();
-            if(currentChar == '\n')
-            {
-                setPosition(0, m_Position.line + 1);
-            }
-            if(std::isspace(currentChar) && m_State != LexerState::LINE_COMMENT && m_State != LexerState::BLOCK_COMMENT)
-            {
-                processToken(m_CurrentToken);
-                continue;
-            }
-            else if(m_State == LexerState::NORMAL)
-            {
-                if(std::isdigit(currentChar))
-                    m_State = LexerState::INT;
-                if(currentChar == '"')
-                {
-                    m_State = LexerState::STRING;
-                    continue;
-                }
-                if(isOperator(currentChar))
-                {
-                    processToken(m_CurrentToken); // Process what was before
-                    m_State = LexerState::OPERATOR;
-                    m_CurrentToken.value += currentChar;
-                    processToken(m_CurrentToken);
-                    continue;
-                }
-            }
-            else if(m_State == LexerState::STRING)
-            {
-                if(currentChar == '\\')
-                {
-                    if(nextChar == EOF)
-                    {
-                        m_State = LexerState::ERROR;
-                        return;
-                    }
-                    m_CurrentToken.value += stream.get();
-                    incrementPosition(1);
-                    continue;
-                }
-                else if(currentChar == '"')
-                {
-                    processToken(m_CurrentToken);
-                    m_State = LexerState::NORMAL;
-                    continue;
-                }
-            }
-            else if(m_State == LexerState::FLOAT)
-            {
-                if(currentChar == '.' || !std::isdigit(currentChar))
-                {
-                    processToken(m_CurrentToken);
-                    stream.unget();
-                    continue;
-                }
-            }
-            else if(m_State == LexerState::INT)
-            {
-                if(currentChar == '.')
-                {
-                    m_State = LexerState::FLOAT;
-                }
-                else if(!std::isdigit(currentChar))
-                {
-                    processToken(m_CurrentToken);
-                    stream.unget();
-                    continue;
-                }
-            }
-            m_CurrentToken.value += currentChar;
+        while(stream >> std::noskipws >> m_CurrentChar)
+        {            
+            if(m_CurrentChar == '\n')
+                incrementLine();
+            else if(std::isdigit(m_CurrentChar))
+                processNumLiteral(stream);
+            else if(m_CurrentChar == '"')
+                processStringLiteral(stream);
+            else if(isOperator(m_CurrentChar))
+                processOperator(stream);
+            else if(std::isalpha(m_CurrentChar) || m_CurrentChar == '_')
+                processIdentifier(stream);
+            
+            incrementColumn();
         }
-        processToken(m_CurrentToken);
     }
-    
-    void Lexer::processToken(Token& token)
+
+    Token& Lexer::newToken(TokenType type, TokenPosition position)
     {
-        if(token.value.empty())
+        return m_Tokens.emplace_back(Token{type, position, ""});
+    }
+
+    void Lexer::processNumLiteral(std::istream& stream)
+    {
+        Token& token = newToken(TokenType::INT_LITERAL, m_Position);
+        token.value += m_CurrentChar;
+        bool hasDot{false};
+        while(stream >> std::noskipws >> m_CurrentChar)
         {
-            token = Token{};
-            m_State = LexerState::NORMAL;
-            return;
-        }
-        if(m_State == LexerState::NORMAL)
-        {
-            if(isKeyword(token.value))
-                token.type = TokenType::KEYWORD;
+            if(std::isdigit(m_CurrentChar))
+            {
+                token.value += m_CurrentChar;
+            }
+            else if(m_CurrentChar == '.' && !hasDot)
+            {
+                token.value += m_CurrentChar;
+                token.type = TokenType::FLOAT_LITERAL;
+                hasDot = true;
+            }
             else
-                token.type = TokenType::IDENTIFIER;
-        }
-        else if(isInt(token.value) && m_State == LexerState::INT)
-        {
-            token.type = TokenType::INT_LITERAL;
-        }
-        else if(isFloat(token.value) && m_State == LexerState::FLOAT)
-        {
-            token.type = TokenType::FLOAT_LITERAL;
-        }
-        else if(m_State == LexerState::STRING)
-        {
-            token.type = TokenType::STRING_LITERAL;
-        }
-        else if(m_State == LexerState::OPERATOR)
-        {
-            token.type = TokenType::OPERATOR;
-        }
-        token.position = m_Position;
-        token.position.column-= token.value.size();
-        m_Tokens.push_back(token);
-        token = Token{};
-        m_State = LexerState::NORMAL;
-    }
-
-    bool Lexer::isInt(std::string_view word)
-    {
-        return std::all_of(word.begin(), word.end(), [](const char c){ return std::isdigit(c); });
-    }
-
-    bool Lexer::isFloat(std::string_view word)
-    {
-        int numDots{ 0 };
-        bool canBeFloat = std::all_of(word.begin(), word.end(), [&numDots](const unsigned char c)
-        {
-            if(c == '.')
             {
-                numDots++;
-                return numDots < 2;
+                stream.putback(m_CurrentChar);
+                break;
             }
-            else if(std::isdigit(c))
-                return true;
+        }
+        incrementColumn(token.value.size() - 1);
+    }
+
+    void Lexer::processStringLiteral(std::istream& stream)
+    {
+        Token& token = newToken(TokenType::STRING_LITERAL, m_Position);
+        bool escape{false};
+        while(stream >> std::noskipws >> m_CurrentChar)
+        {
+            if(m_CurrentChar == '\\')
+            {
+                incrementColumn();
+                escape = true;
+            }
+            else if(escape || m_CurrentChar != '"')
+            {
+                token.value += m_CurrentChar;
+                escape = false;
+            } 
             else
-                return false;
-        });
-        return canBeFloat && numDots == 1;
+            {
+                incrementColumn();
+                break;
+            }
+        }
+        incrementColumn(token.value.size());
     }
 
-    bool Lexer::isString(std::string_view word)
+    void Lexer::processOperator(std::istream& stream)
     {
-        if(word.size() < 2)
-            return false;
-        if(word.front() != '"' && word.back() != '"')
-            return false;
-        return true;
+        Token& token = newToken(TokenType::OPERATOR, m_Position);
+        token.value += m_CurrentChar;
+        const unsigned char nextChar = stream.peek();
+        if(isPairedOperator(m_CurrentChar, nextChar))
+        {
+            stream >> std::noskipws >> m_CurrentChar;
+            token.value += m_CurrentChar;
+            incrementColumn();
+        }
     }
 
-    void Lexer::setPosition(size_t column, size_t line)
+    void Lexer::processIdentifier(std::istream& stream)
     {
-        m_Position.column = column;
-        m_Position.line = line;
+        Token& token = newToken(TokenType::IDENTIFIER, m_Position);
+        token.value += m_CurrentChar;
+        while(stream >> std::noskipws >> m_CurrentChar)
+        {
+            if(isalnum(m_CurrentChar) || m_CurrentChar == '_')
+            {
+                token.value += m_CurrentChar;
+                incrementColumn();
+            }
+            else
+            {
+                stream.putback(m_CurrentChar);
+                break;
+            }
+        }
+        if (isKeyword(token.value))
+            token.type = TokenType::KEYWORD;
     }
 
-    void Lexer::incrementPosition(size_t column, size_t line)
+    bool Lexer::isOperator(unsigned char c)
     {
-        m_Position.column += column;
-        m_Position.line += line;
+        return Operators.find(c) != Operators.end();
+    }
+
+    bool Lexer::isPairedOperator(unsigned char a, unsigned char b)
+    {
+        const auto search = PairedOperators.find(a);
+        if(search != PairedOperators.cend())
+        {
+            const auto secondSearch = search->second.find(b);
+            return secondSearch != search->second.cend();
+        }
+        return false;
+    }
+
+    bool Lexer::isKeyword(const std::string& word)
+    {
+         return Keywords.find(word) != Keywords.end();
+    }
+
+    void Lexer::incrementLine(int count)
+    {
+        m_Position.column = 0;
+        m_Position.line += count;
+    }
+    void Lexer::incrementColumn(int count)
+    {
+        m_Position.column += count;
     }
 }
