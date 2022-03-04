@@ -35,6 +35,13 @@ namespace BBTCompiler
         TokenType type{ TokenType::INVALID };
         TokenPosition position{};
         std::string value{};
+        friend bool operator==(const Token& l, const Token& r)
+        {
+            return l.type == r.type
+                && l.position.column == r.position.column
+                && l.position.line == r.position.line
+                && l.value == r.value;
+        }
     };
 
     enum class LexerState { NORMAL, LINE_COMMENT, BLOCK_COMMENT, STRING, INT, FLOAT, OPERATOR, ERROR };
