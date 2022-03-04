@@ -130,6 +130,52 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     CHECK(tokens[3].position.line == 1);
 }
 
+TEST_CASE("LexerUnaryOperators", "[Operators]")
+{
+    std::stringstream ss("+= -- ++");
+    Lexer lexer;
+    const auto& tokens = lexer.getTokens();
+    lexer.scan(ss);
+    REQUIRE(tokens.size() == 3);
+    CHECK(tokens[0].value == "+=");
+    CHECK(tokens[0].type == TokenType::OPERATOR);
+    CHECK(tokens[0].position.column == 1);
+    CHECK(tokens[0].position.line == 1);
+    CHECK(tokens[1].value == "--");
+    CHECK(tokens[1].type == TokenType::OPERATOR);
+    CHECK(tokens[1].position.column == 4);
+    CHECK(tokens[1].position.line == 1);
+    CHECK(tokens[2].value == "++");
+    CHECK(tokens[2].type == TokenType::OPERATOR);
+    CHECK(tokens[2].position.column == 7);
+    CHECK(tokens[2].position.line == 1);
+
+    lexer.clear();
+    ss = std::stringstream(R"(str+="a"+"b")");
+    lexer.scan(ss);
+    REQUIRE(tokens.size() == 5);
+    CHECK(tokens[0].value == "str");
+    CHECK(tokens[0].type == TokenType::IDENTIFIER);
+    CHECK(tokens[0].position.column == 1);
+    CHECK(tokens[0].position.line == 1);
+    CHECK(tokens[1].value == "+=");
+    CHECK(tokens[1].type == TokenType::OPERATOR);
+    CHECK(tokens[1].position.column == 4);
+    CHECK(tokens[1].position.line == 1);
+    CHECK(tokens[2].value == "a");
+    CHECK(tokens[2].type == TokenType::STRING_LITERAL);
+    CHECK(tokens[2].position.column == 6);
+    CHECK(tokens[2].position.line == 1);
+    CHECK(tokens[3].value == "+");
+    CHECK(tokens[3].type == TokenType::OPERATOR);
+    CHECK(tokens[3].position.column == 9);
+    CHECK(tokens[3].position.line == 1);
+    CHECK(tokens[4].value == "b");
+    CHECK(tokens[4].type == TokenType::STRING_LITERAL);
+    CHECK(tokens[4].position.column == 10);
+    CHECK(tokens[4].position.line == 1);
+}
+
 TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
 {
     std::stringstream ss("if _test void t_10");
