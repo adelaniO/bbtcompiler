@@ -6,7 +6,7 @@
 
 namespace BBTCompiler
 {
-    void Lexer::clear()
+    void Lexer::reset()
     {
         m_Tokens.clear();
         m_CurrentToken = Token{}; 

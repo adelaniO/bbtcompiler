@@ -17,7 +17,7 @@ TEST_CASE("LexerInteger", "[Literals]")
     CHECK(tokens[0].value == "54321");
     CHECK(tokens[0].type == TokenType::INT_LITERAL);
 
-    lexer.clear();
+    lexer.reset();
     ss = std::stringstream("54 321");
     lexer.scan(ss);
     REQUIRE(tokens.size() == 2);
@@ -42,7 +42,7 @@ TEST_CASE("LexerFloat", "[Literals]")
     CHECK(tokens[0].value == "54.321");
     CHECK(tokens[0].type == TokenType::FLOAT_LITERAL);
 
-    lexer.clear();
+    lexer.reset();
     ss = std::stringstream("5.4 3.21");
     lexer.scan(ss);
     REQUIRE(tokens.size() == 2);
@@ -67,7 +67,7 @@ TEST_CASE("LexerString", "[Literals]")
     CHECK(tokens[0].value == "abcdef");
     CHECK(tokens[0].type == TokenType::STRING_LITERAL);
 
-    lexer.clear();
+    lexer.reset();
     const char* multiStr = R"("abc" "def" "gh\"i")";
     ss = std::stringstream(multiStr);
     lexer.scan(ss);
@@ -108,7 +108,7 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     CHECK(tokens[2].position.column == 3);
     CHECK(tokens[2].position.line == 1);
 
-    lexer.clear();
+    lexer.reset();
     ss = std::stringstream(R"(15.2 /="string")");
     lexer.scan(ss);
     REQUIRE(tokens.size() == 4);
@@ -150,7 +150,7 @@ TEST_CASE("LexerUnaryOperators", "[Operators]")
     CHECK(tokens[2].position.column == 7);
     CHECK(tokens[2].position.line == 1);
 
-    lexer.clear();
+    lexer.reset();
     ss = std::stringstream(R"(str+="a"+"b")");
     lexer.scan(ss);
     REQUIRE(tokens.size() == 5);

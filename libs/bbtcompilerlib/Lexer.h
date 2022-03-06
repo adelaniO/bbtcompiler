@@ -52,7 +52,7 @@ namespace BBTCompiler
         void scan(std::istream& stream);
         std::vector<Token>& getTokens() { return m_Tokens; }
         const std::vector<Token>& getTokens() const { return m_Tokens; }
-        void clear();
+        void reset();
     private:
         Token m_CurrentToken;
         unsigned char m_CurrentChar;
