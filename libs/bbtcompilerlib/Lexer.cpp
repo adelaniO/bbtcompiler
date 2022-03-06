@@ -68,11 +68,11 @@ namespace BBTCompiler
     {
         Token& token = newToken(TokenType::STRING_LITERAL, m_Position);
         bool escape{false};
+        incrementColumn();
         while(stream >> std::noskipws >> m_CurrentChar)
         {
             if(m_CurrentChar == '\\')
             {
-                incrementColumn();
                 escape = true;
             }
             else if(escape || m_CurrentChar != '"')
@@ -82,11 +82,10 @@ namespace BBTCompiler
             } 
             else
             {
-                incrementColumn();
                 break;
             }
+            incrementColumn();
         }
-        incrementColumn(token.value.size());
     }
 
     void Lexer::processOperator(std::istream& stream)
