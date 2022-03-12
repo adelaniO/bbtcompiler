@@ -29,7 +29,7 @@ namespace BBTCompiler
         { '-', {'-','='} }
     };
 
-    enum class TokenType { INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, OPERATOR, KEYWORD, IDENTIFIER, INVALID };
+    enum class TokenType { INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, OPERATOR, KEYWORD, IDENTIFIER, END, INVALID };
     struct Token
     {
         TokenType type{ TokenType::INVALID };
@@ -44,8 +44,6 @@ namespace BBTCompiler
         }
     };
 
-    enum class LexerState { NORMAL, LINE_COMMENT, BLOCK_COMMENT, STRING, INT, FLOAT, OPERATOR, ERROR };
-
     class Lexer
     {
     public:
@@ -58,7 +56,6 @@ namespace BBTCompiler
         unsigned char m_CurrentChar;
         std::vector<Token> m_Tokens;
         TokenPosition m_Position{};
-        LexerState m_State{ LexerState::NORMAL };
 
         Token& newToken(TokenType type, TokenPosition position);
         void processNumLiteral(std::istream& stream);

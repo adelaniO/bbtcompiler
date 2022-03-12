@@ -10,14 +10,13 @@ namespace BBTCompiler
     {
         m_Tokens.clear();
         m_CurrentToken = Token{}; 
-        m_State = LexerState::NORMAL;
         m_Position = TokenPosition{ 1, 1 };
     }
 
     void Lexer::scan(std::istream& stream)
     {
         while(stream >> std::noskipws >> m_CurrentChar)
-        {            
+        {
             if(m_CurrentChar == '\n')
                 incrementLine();
             else if(std::isdigit(m_CurrentChar))
