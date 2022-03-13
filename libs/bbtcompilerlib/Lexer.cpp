@@ -89,13 +89,16 @@ namespace BBTCompiler
 
     void Lexer::processOperator(std::istream& stream)
     {
-        Token& token = newToken(TokenType::OPERATOR, m_Position);
-        token.value += m_CurrentChar;
+        TokenType type = isOperator(m_CurrentChar) ? Operators.find(m_CurrentChar)->second: TokenType::INVALID;
+        Token& token = newToken(type, m_Position);
         const unsigned char nextChar = stream.peek();
-        if(isPairedOperator(m_CurrentChar, nextChar))
+        std::string pairString;
+        pairString.push_back(m_CurrentChar);
+        pairString.push_back(nextChar);
+        if(isPairedOperator(pairString))
         {
             stream >> std::noskipws >> m_CurrentChar;
-            token.value += m_CurrentChar;
+            token.type = PairedOperators.find(pairString)->second;
             incrementColumn();
         }
     }
@@ -118,7 +121,10 @@ namespace BBTCompiler
             }
         }
         if (isKeyword(token.value))
-            token.type = TokenType::KEYWORD;
+        {
+            token.type = Keywords.find(token.value)->second;
+            token.value.clear();
+        }
     }
 
     bool Lexer::isOperator(unsigned char c)
@@ -126,15 +132,10 @@ namespace BBTCompiler
         return Operators.find(c) != Operators.end();
     }
 
-    bool Lexer::isPairedOperator(unsigned char a, unsigned char b)
+    bool Lexer::isPairedOperator(const std::string& pairString)
     {
-        const auto search = PairedOperators.find(a);
-        if(search != PairedOperators.cend())
-        {
-            const auto secondSearch = search->second.find(b);
-            return secondSearch != search->second.cend();
-        }
-        return false;
+        const auto search = PairedOperators.find(pairString);
+        return search != PairedOperators.cend();
     }
 
     bool Lexer::isKeyword(const std::string& word)

@@ -12,24 +12,71 @@ namespace BBTCompiler
         size_t column{ 1 };
     };
 
-    const std::unordered_set<std::string> Keywords{
-        "do","if","else","while","continue","break",
-        "int","char","boolean","long","float",
-        "const","static","void",
-        "true","false","null",
-        "case","switch","return"
+    enum class TokenType
+    {
+        IDENTIFIER,
+        INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL,
+        //Keywords
+        IF, ELSE, WHILE, CONTINUE, BREAK, INT, CHAR, BOOL,
+        FLOAT, CONST, STATIC, VOID, TRUE, FALSE, NIL, RETURN,
+        // Operators
+        LEFT_BRACE, RIGHT_BRACE, LEFT_PAREN, RIGHT_PAREN,
+        LEFT_BRACKET, RIGHT_BRACKET, DOT, COMMA, SEMICOLON, COLON,
+        PLUS, MINUS, STAR, SLASH, AMPERSAND, LESS, MORE, EQ,
+        // Double Operators
+        PLUS_PLUS, MINUS_MINUS, PLUS_EQ, MINUS_EQ,
+
+        END,
+        INVALID
     };
 
-    const std::unordered_set<unsigned char> Operators{
-        '{','}','(',')','[',']','.',',',';','+','-','*','/','&','<','>','=','-'
+    const std::unordered_map<std::string, TokenType> Keywords{
+        {"if",          TokenType::IF},
+        {"else",        TokenType::ELSE},
+        {"while",       TokenType::WHILE},
+        {"continue",    TokenType::CONTINUE},
+        {"break",       TokenType::BREAK},
+        {"int",         TokenType::INT},
+        {"char",        TokenType::CHAR},
+        {"boolean",     TokenType::BOOL},
+        {"float",       TokenType::FLOAT},
+        {"const",       TokenType::CONST},
+        {"static",      TokenType::STATIC},
+        {"void",        TokenType::VOID},
+        {"true",        TokenType::TRUE},
+        {"false",       TokenType::FALSE},
+        {"null",        TokenType::NIL},
+        {"return",      TokenType::RETURN}
     };
 
-    const std::unordered_map<unsigned char, std::unordered_set<unsigned char>> PairedOperators{
-        { '+', {'+','='} },
-        { '-', {'-','='} }
+    const std::unordered_map<unsigned char, TokenType> Operators{
+        {'{', TokenType::LEFT_BRACE},
+        {'}', TokenType::RIGHT_BRACE},
+        {'(', TokenType::LEFT_PAREN},
+        {')', TokenType::RIGHT_PAREN},
+        {'[', TokenType::LEFT_BRACKET},
+        {']', TokenType::RIGHT_BRACKET},
+        {'.', TokenType::DOT},
+        {',', TokenType::COMMA},
+        {';', TokenType::SEMICOLON},
+        {':', TokenType::COLON},
+        {'+', TokenType::PLUS},
+        {'-', TokenType::MINUS},
+        {'*', TokenType::STAR},
+        {'/', TokenType::SLASH},
+        {'&', TokenType::AMPERSAND},
+        {'<', TokenType::LESS},
+        {'>', TokenType::MORE},
+        {'=', TokenType::EQ}
     };
 
-    enum class TokenType { INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL, OPERATOR, KEYWORD, IDENTIFIER, END, INVALID };
+    const std::unordered_map<std::string, TokenType> PairedOperators{
+        {"++", TokenType::PLUS_PLUS},
+        {"--", TokenType::MINUS_MINUS},
+        {"+=", TokenType::PLUS_EQ},
+        {"-+", TokenType::MINUS_EQ}
+    };
+
     struct Token
     {
         TokenType type{ TokenType::INVALID };
@@ -64,7 +111,7 @@ namespace BBTCompiler
         void processIdentifier(std::istream& stream);
 
         bool isOperator(unsigned char c);
-        bool isPairedOperator(unsigned char a, unsigned char b);
+        bool isPairedOperator(const std::string& pairString);
         bool isKeyword(const std::string& word);
         void incrementLine(int count = 1);
         void incrementColumn(int count = 1);
