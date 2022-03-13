@@ -27,9 +27,10 @@ namespace BBTCompiler
                 processOperator(stream);
             else if(std::isalpha(m_CurrentChar) || m_CurrentChar == '_')
                 processIdentifier(stream);
-            
+
             incrementColumn();
         }
+        m_Tokens.emplace_back(Token{TokenType::END, m_Position, ""});
     }
 
     Token& Lexer::newToken(TokenType type, TokenPosition position)

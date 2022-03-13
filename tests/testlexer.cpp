@@ -13,14 +13,15 @@ TEST_CASE("LexerInteger", "[Literals]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 1);
+    REQUIRE(tokens.size() == 2);
     CHECK(tokens[0].value == "54321");
     CHECK(tokens[0].type == TokenType::INT_LITERAL);
+    CHECK(tokens[1].type == TokenType::END);
 
     lexer.reset();
     ss = std::stringstream("54 321");
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 2);
+    REQUIRE(tokens.size() == 3);
     CHECK(tokens[0].value == "54");
     CHECK(tokens[0].type == TokenType::INT_LITERAL);
     CHECK(tokens[0].position.column == 1);
@@ -30,6 +31,7 @@ TEST_CASE("LexerInteger", "[Literals]")
     CHECK(tokens[1].type == TokenType::INT_LITERAL);
     CHECK(tokens[1].position.column == 4);
     CHECK(tokens[1].position.line == 1);
+    CHECK(tokens[2].type == TokenType::END);
 }
 
 TEST_CASE("LexerFloat", "[Literals]")
@@ -38,14 +40,15 @@ TEST_CASE("LexerFloat", "[Literals]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 1);
+    REQUIRE(tokens.size() == 2);
     CHECK(tokens[0].value == "54.321");
     CHECK(tokens[0].type == TokenType::FLOAT_LITERAL);
+    CHECK(tokens[1].type == TokenType::END);
 
     lexer.reset();
     ss = std::stringstream("5.4 3.21");
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 2);
+    REQUIRE(tokens.size() == 3);
     CHECK(tokens[0].value == "5.4");
     CHECK(tokens[0].type == TokenType::FLOAT_LITERAL);
     CHECK(tokens[0].position.column == 1);
@@ -55,6 +58,7 @@ TEST_CASE("LexerFloat", "[Literals]")
     CHECK(tokens[1].type == TokenType::FLOAT_LITERAL);
     CHECK(tokens[1].position.column == 5);
     CHECK(tokens[1].position.line == 1);
+    CHECK(tokens[2].type == TokenType::END);
 }
 
 TEST_CASE("LexerString", "[Literals]")
@@ -63,15 +67,16 @@ TEST_CASE("LexerString", "[Literals]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 1);
+    REQUIRE(tokens.size() == 2);
     CHECK(tokens[0].value == "abcdef");
     CHECK(tokens[0].type == TokenType::STRING_LITERAL);
+    CHECK(tokens[1].type == TokenType::END);
 
     lexer.reset();
     const char* multiStr = R"("abc" "def" "gh\"i")";
     ss = std::stringstream(multiStr);
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens.size() == 4);
     CHECK(tokens[0].value == "abc");
     CHECK(tokens[0].type == TokenType::STRING_LITERAL);
     CHECK(tokens[0].position.column == 1);
@@ -86,6 +91,8 @@ TEST_CASE("LexerString", "[Literals]")
     CHECK(tokens[2].type == TokenType::STRING_LITERAL);
     CHECK(tokens[2].position.column == 13);
     CHECK(tokens[2].position.line == 1);
+
+    CHECK(tokens[3].type == TokenType::END);
 }
 
 TEST_CASE("LexerBinaryOperators", "[Operators]")
@@ -94,7 +101,7 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens.size() == 4);
     CHECK(tokens[0].value == "1");
     CHECK(tokens[0].type == TokenType::INT_LITERAL);
     CHECK(tokens[0].position.column == 1);
@@ -106,11 +113,12 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     CHECK(tokens[2].type == TokenType::FLOAT_LITERAL);
     CHECK(tokens[2].position.column == 3);
     CHECK(tokens[2].position.line == 1);
+    CHECK(tokens[3].type == TokenType::END);
 
     lexer.reset();
     ss = std::stringstream(R"(15.2 /="string")");
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 4);
+    REQUIRE(tokens.size() == 5);
     CHECK(tokens[0].value == "15.2");
     CHECK(tokens[0].type == TokenType::FLOAT_LITERAL);
     CHECK(tokens[0].position.column == 1);
@@ -125,6 +133,7 @@ TEST_CASE("LexerBinaryOperators", "[Operators]")
     CHECK(tokens[3].type == TokenType::STRING_LITERAL);
     CHECK(tokens[3].position.column == 8);
     CHECK(tokens[3].position.line == 1);
+    CHECK(tokens[4].type == TokenType::END);
 }
 
 TEST_CASE("LexerUnaryOperators", "[Operators]")
@@ -133,7 +142,7 @@ TEST_CASE("LexerUnaryOperators", "[Operators]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 3);
+    REQUIRE(tokens.size() == 4);
     CHECK(tokens[0].type == TokenType::PLUS_EQ);
     CHECK(tokens[0].position.column == 1);
     CHECK(tokens[0].position.line == 1);
@@ -143,11 +152,12 @@ TEST_CASE("LexerUnaryOperators", "[Operators]")
     CHECK(tokens[2].type == TokenType::PLUS_PLUS);
     CHECK(tokens[2].position.column == 7);
     CHECK(tokens[2].position.line == 1);
+    CHECK(tokens[3].type == TokenType::END);
 
     lexer.reset();
     ss = std::stringstream(R"(str+="a"+"b")");
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 5);
+    REQUIRE(tokens.size() == 6);
     CHECK(tokens[0].value == "str");
     CHECK(tokens[0].type == TokenType::IDENTIFIER);
     CHECK(tokens[0].position.column == 1);
@@ -166,6 +176,7 @@ TEST_CASE("LexerUnaryOperators", "[Operators]")
     CHECK(tokens[4].type == TokenType::STRING_LITERAL);
     CHECK(tokens[4].position.column == 10);
     CHECK(tokens[4].position.line == 1);
+    CHECK(tokens[5].type == TokenType::END);
 }
 
 TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
@@ -174,7 +185,7 @@ TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 4);
+    REQUIRE(tokens.size() == 5);
     CHECK(tokens[0].type == TokenType::IF);
     CHECK(tokens[0].position.column == 1);
     CHECK(tokens[0].position.line == 1);
@@ -189,6 +200,7 @@ TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
     CHECK(tokens[3].type == TokenType::IDENTIFIER);
     CHECK(tokens[3].position.column == 15);
     CHECK(tokens[3].position.line == 1);
+    CHECK(tokens[4].type == TokenType::END);
 }
 
 TEST_CASE("LexerFunctions", "[functions]")
@@ -203,7 +215,7 @@ TEST_CASE("LexerFunctions", "[functions]")
     Lexer lexer;
     const auto& tokens = lexer.getTokens();
     lexer.scan(ss);
-    REQUIRE(tokens.size() == 18);
+    REQUIRE(tokens.size() == 19);
     CHECK(tokens[0].type == TokenType::INT);
     CHECK(tokens[0].position.line == 2); CHECK(tokens[0].position.column == 5);
     CHECK(tokens[1].value == "main");
@@ -244,6 +256,7 @@ TEST_CASE("LexerFunctions", "[functions]")
     CHECK(tokens[16].position.line == 4); CHECK(tokens[16].position.column == 17);
     CHECK(tokens[17].type == TokenType::RIGHT_BRACE);
     CHECK(tokens[17].position.line == 5); CHECK(tokens[17].position.column == 5);
+    CHECK(tokens[18].type == TokenType::END);
 }
 
 //TEST_CASE("LexerComments", "[Comments]")
