@@ -16,7 +16,7 @@ target_include_directories(bbtcompiler PRIVATE libs/bbtcompilerlib)
 
 #===============Tests===================
 find_package(Catch2 REQUIRED)
-add_executable(tests "tests/testsmain.cpp" "tests/testlexer.cpp")
+add_executable(tests "tests/testsmain.cpp" "tests/testlexer.cpp" "tests/testParser.cpp")
 target_link_libraries(tests PRIVATE Catch2::Catch2 bbtcompilerlib)
 target_include_directories(tests PRIVATE libs/bbtcompilerlib)
 

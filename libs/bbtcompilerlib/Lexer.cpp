@@ -95,12 +95,14 @@ namespace BBTCompiler
         const unsigned char nextChar = stream.peek();
         std::string pairString;
         pairString.push_back(m_CurrentChar);
+        token.value = m_CurrentChar;
         pairString.push_back(nextChar);
         if(isPairedOperator(pairString))
         {
             stream >> std::noskipws >> m_CurrentChar;
             token.type = PairedOperators.find(pairString)->second;
             incrementColumn();
+            token.value = pairString;
         }
     }
 
@@ -124,7 +126,6 @@ namespace BBTCompiler
         if (isKeyword(token.value))
         {
             token.type = Keywords.find(token.value)->second;
-            token.value.clear();
         }
     }
 
