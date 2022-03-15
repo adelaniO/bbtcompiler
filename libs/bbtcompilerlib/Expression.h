@@ -80,10 +80,10 @@ namespace BBTCompiler
         std::unique_ptr<Expr> m_Expression;
     };
 
-    class PrimaryExpr : public Expr
+    class LiteralExpr : public Expr
     {
     public:
-        PrimaryExpr(Token token)
+        LiteralExpr(Token token)
             : m_Token{token}
         {}
         virtual void accept(ExprConstVisitorBase& visitor) const override
@@ -122,7 +122,7 @@ namespace BBTCompiler
             expr.m_Right->accept(*this);
         }
 
-        void visit(const PrimaryExpr& expr) override
+        void visit(const LiteralExpr& expr) override
         {
             auto& exprJson = getCurrentJson();
             exprJson["type"] = "PrimaryExpression";

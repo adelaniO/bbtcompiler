@@ -149,7 +149,7 @@ namespace BBTCompiler
                 TokenType::INT_LITERAL, TokenType::FLOAT_LITERAL, TokenType::STRING_LITERAL
             }))
         {
-            return new PrimaryExpr(previous());
+            return new LiteralExpr(previous());
         }
 
         if (match({ TokenType::LEFT_PAREN }))
