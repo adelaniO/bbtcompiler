@@ -29,6 +29,7 @@ namespace BBTCompiler
         Expr* parseUnaryExpr();
         Expr* parsePrimaryExpr();
         std::string syntaxErrorMsg(const std::string& filename, const Token& token, const std::string& msg);
+        void synchronize();
     private:
         std::vector<Token>& m_Tokens;
         std::vector<Token>::iterator m_Current;

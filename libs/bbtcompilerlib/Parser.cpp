@@ -168,4 +168,25 @@ namespace BBTCompiler
                 std::to_string(token.position.line) + ":" + std::to_string(token.position.column) +
                 ": syntax error: " + msg;
     }
+
+    void Parser::synchronize()
+    {
+        advance();
+        while(!isAtEnd())
+        {
+            if(previous().type == TokenType::SEMICOLON)
+                return;
+            
+            switch (peek().type)
+            {
+            case TokenType::IF:
+            case TokenType::WHILE:
+            case TokenType::FOR:
+            case TokenType::RETURN:
+                return;
+            }
+
+            advance();
+        }
+    }
 }

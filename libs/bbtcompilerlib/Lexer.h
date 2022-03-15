@@ -17,7 +17,7 @@ namespace BBTCompiler
         IDENTIFIER,
         INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL,
         //Keywords
-        IF, ELSE, WHILE, CONTINUE, BREAK, INT, CHAR, BOOL,
+        IF, ELSE, FOR, WHILE, CONTINUE, BREAK, INT, CHAR, BOOL,
         FLOAT, CONST, STATIC, VOID, TRUE, FALSE, NIL, RETURN,
         // Operators
         LEFT_BRACE, RIGHT_BRACE, LEFT_PAREN, RIGHT_PAREN,
@@ -35,6 +35,7 @@ namespace BBTCompiler
         {"if",          TokenType::IF},
         {"else",        TokenType::ELSE},
         {"while",       TokenType::WHILE},
+        {"for",         TokenType::FOR},
         {"continue",    TokenType::CONTINUE},
         {"break",       TokenType::BREAK},
         {"int",         TokenType::INT},
