@@ -9,6 +9,7 @@ namespace BBTCompiler
     class Expr
     {
     public:
+        virtual ~Expr() = default;
         size_t getLevel() const { return m_Level; }
         void setLevel(size_t level) { m_Level = level; }
         virtual void accept(ExprConstVisitorBase& visitor) const = 0;
