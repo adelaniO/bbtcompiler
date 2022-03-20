@@ -55,17 +55,34 @@ namespace BBTCompiler
         return false;
     }
 
-    Expr* Parser::parse()
+    std::vector<std::unique_ptr<Stmt>>& Parser::parse()
     {
-        try
+        while(!isAtEnd())
         {
-            return parseExpression();
+            Stmt* statement{};
+            m_Statements.push_back(std::move(parseStatement()));
         }
-        catch(const std::exception& e)
-        {
-            std::cout << e.what() << '\n';
-        }
-        return nullptr;
+        return m_Statements;
+    }
+
+    std::unique_ptr<Stmt> Parser::parseStatement()
+    {
+        if(match({TokenType::PRINT})) return parsePrintStatement();
+        return parseExpressionStatement();
+    }
+
+    std::unique_ptr<Stmt> Parser::parseExpressionStatement()
+    {
+        Expr* expression = parseExpression();
+        consume(TokenType::SEMICOLON, "Expect ';' after value.");
+        return std::make_unique<ExprStmt>(expression);
+    }
+
+    std::unique_ptr<Stmt> Parser::parsePrintStatement()
+    {
+        Expr* expression{ parseExpression() };
+        consume(TokenType::SEMICOLON, "Expect ';' after value.");
+        return std::make_unique<PrintStmt>(expression);
     }
 
     Expr* Parser::parseExpression()

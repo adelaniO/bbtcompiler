@@ -4,6 +4,7 @@
 #include <string>
 #include "Lexer.h"
 #include "Expression.h"
+#include "Statement.h"
 
 namespace BBTCompiler
 {
@@ -11,7 +12,7 @@ namespace BBTCompiler
     {
     public:
         Parser(std::vector<Token>& tokens);
-        Expr* parse();
+        std::vector<std::unique_ptr<Stmt>>& parse();
     private:
         Token& advance();
         Token& previous();
@@ -20,6 +21,9 @@ namespace BBTCompiler
         bool isAtEnd();
         bool check(TokenType type);
         bool match(const std::vector<TokenType>& types);
+        std::unique_ptr<Stmt> parseStatement();
+        std::unique_ptr<Stmt> parseExpressionStatement();
+        std::unique_ptr<Stmt> parsePrintStatement();
         Expr* parseExpression();
         Expr* parseAssignmentExpr();
         Expr* parseEqualityExpr();
@@ -33,5 +37,6 @@ namespace BBTCompiler
     private:
         std::vector<Token>& m_Tokens;
         std::vector<Token>::iterator m_Current;
+        std::vector<std::unique_ptr<Stmt>> m_Statements;
     };
 }

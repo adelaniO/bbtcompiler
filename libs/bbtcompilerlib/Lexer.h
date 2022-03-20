@@ -19,6 +19,7 @@ namespace BBTCompiler
         //Keywords
         IF, ELSE, FOR, WHILE, CONTINUE, BREAK, INT, CHAR, BOOL,
         FLOAT, CONST, STATIC, VOID, TRUE, FALSE, NIL, RETURN,
+        PRINT,
         // Operators
         LEFT_BRACE, RIGHT_BRACE, LEFT_PAREN, RIGHT_PAREN,
         LEFT_BRACKET, RIGHT_BRACKET, DOT, COMMA, SEMICOLON, COLON,
@@ -48,7 +49,8 @@ namespace BBTCompiler
         {"true",        TokenType::TRUE},
         {"false",       TokenType::FALSE},
         {"null",        TokenType::NIL},
-        {"return",      TokenType::RETURN}
+        {"return",      TokenType::RETURN},
+        {"print",       TokenType::PRINT}
     };
 
     const std::unordered_map<unsigned char, TokenType> Operators{
