@@ -59,10 +59,38 @@ namespace BBTCompiler
     {
         while(!isAtEnd())
         {
-            Stmt* statement{};
-            m_Statements.push_back(std::move(parseStatement()));
+            if(std::unique_ptr<Stmt> statement{ parseDeclaration() })
+                m_Statements.push_back(std::move(statement));
         }
         return m_Statements;
+    }
+
+    std::unique_ptr<Stmt> Parser::parseDeclaration()
+    {
+        try
+        {
+            if(match({TokenType::LET}))
+                return parseVariableDeclaration();
+            return parseStatement();
+        }
+        catch (const std::exception& e)
+        {
+            synchronize();
+            std::cerr << e.what();
+        }
+        return nullptr;
+    }
+    
+    std::unique_ptr<Stmt> Parser::parseVariableDeclaration()
+    {
+        Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
+
+        Expr* initializer;
+        if(match({TokenType::EQ}))
+            initializer = parseExpression();
+
+        consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
+        return std::make_unique<VariableStmt>(name, initializer);
     }
 
     std::unique_ptr<Stmt> Parser::parseStatement()

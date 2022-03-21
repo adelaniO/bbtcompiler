@@ -21,6 +21,8 @@ namespace BBTCompiler
         bool isAtEnd();
         bool check(TokenType type);
         bool match(const std::vector<TokenType>& types);
+        std::unique_ptr<Stmt> parseDeclaration();
+        std::unique_ptr<Stmt> parseVariableDeclaration();
         std::unique_ptr<Stmt> parseStatement();
         std::unique_ptr<Stmt> parseExpressionStatement();
         std::unique_ptr<Stmt> parsePrintStatement();

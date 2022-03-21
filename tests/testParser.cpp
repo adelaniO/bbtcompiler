@@ -28,6 +28,18 @@ TEST_CASE("ParseExpression", "[Expression]")
         const auto& exprJson{ jsonVisitor.getJson() };
         CHECK(exprJson.contains("expression"));
     }
+
+    SECTION("Assignment Expression")
+    {
+        lexer.scan(std::stringstream("let a = b;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        jsonVisitor.print();
+        const auto& exprJson{ jsonVisitor.getJson() };
+        CHECK(exprJson.contains("expression"));
+    }
 }
 
 TEST_CASE("ParseStatements", "[Stmt][Statements]")

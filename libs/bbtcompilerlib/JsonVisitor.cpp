@@ -6,13 +6,17 @@ namespace BBTCompiler
 {
     void ASTJSonVisitor::visit(const AssignmentExpr& expr)
     {
+        auto& exprJson = getCurrentJson();
+        exprJson["type"] = "BinaryExpression";
+        auto& leftExprJson = addNestedJson("lhs");
     }
+
     void ASTJSonVisitor::visit(const BinaryExpr& expr)
     {
         auto& exprJson = getCurrentJson();
+        exprJson["type"] = "BinaryExpression";
         auto& leftExprJson = addNestedJson("lhs");
         auto& rightExprJson = addNestedJson("rhs");
-        exprJson["type"] = "BinaryExpression";
         exprJson["operator"] = expr.m_Operator.value;
         setCurrentJson(leftExprJson);
         expr.m_Left->accept(*this);
@@ -22,9 +26,9 @@ namespace BBTCompiler
     void ASTJSonVisitor::visit(const UnaryExpr& expr)
     {
         auto& exprJson = getCurrentJson();
-        auto& rightExprJson = addNestedJson("rhs");
         exprJson["type"] = "UnaryExpression";
         exprJson["operator"] = expr.m_Operator.value;
+        auto& rightExprJson = addNestedJson("rhs");
         setCurrentJson(rightExprJson);
         expr.m_Right->accept(*this);
     }
@@ -40,8 +44,8 @@ namespace BBTCompiler
     void ASTJSonVisitor::visit(const GroupedExpr& expr)
     {
         auto& exprJson = getCurrentJson();
-        auto& groupJson = addNestedJson("expression");
         exprJson["type"] = "GroupedExpression";
+        auto& groupJson = addNestedJson("expression");
         setCurrentJson(groupJson);
         expr.m_Expression->accept(*this);
     }
@@ -65,8 +69,8 @@ namespace BBTCompiler
     void ASTJSonVisitor::visit(const ExprStmt& stmt)
     {
         auto& exprJson = getCurrentJson();
-        auto& expresson = addNestedJson("expression");
         exprJson["type"] = "ExpressionStatement";
+        auto& expresson = addNestedJson("expression");
         setCurrentJson(expresson);
         stmt.m_Expression->accept(*this);
     }
@@ -74,23 +78,24 @@ namespace BBTCompiler
     void ASTJSonVisitor::visit(const VariableStmt& stmt)
     {
         auto& exprJson = getCurrentJson();
-        auto& expresson = addNestedJson("expression");
         exprJson["type"] = "VariableStatement";
         exprJson["name"] = stmt.m_Name.value;
+        auto& expresson = addNestedJson("expression");
         setCurrentJson(expresson);
         stmt.m_Initializer->accept(*this);
     }
 
     void ASTJSonVisitor::visit(const BlockStmt& stmt)
     {
-        //auto& stmtJson = getCurrentJson();
-        //auto& stmtJsonArray = addNestedJsonArray("statements");
-        //stmtJson["type"] = "BlockStatement";
-        //for (auto& statement : stmt.m_Statements)
-        //{
-        //    stmtJsonArray
-        //        setCurrentJson(stmtJsonArray);
-        //}
+        auto& stmtJson = getCurrentJson();
+        stmtJson["type"] = "BlockStatement";
+        auto& stmtJsonArray = addNestedJsonArray("statements");
+        for (auto& statement : stmt.m_Statements)
+        {
+            auto& element = stmtJsonArray.emplace_back(Json({}));
+            setCurrentJson(element);
+            statement->accept(*this);
+        }
     }
 
     const Json& ASTJSonVisitor::getJson() const { return m_Json; }
