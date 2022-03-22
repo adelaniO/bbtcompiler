@@ -16,8 +16,8 @@ namespace BBTCompiler
     class PrintStmt : public Stmt
     {
     public:
-        PrintStmt(Expr* expression)
-            : m_Expression{expression}
+        PrintStmt(std::unique_ptr<Expr> expression)
+            : m_Expression{std::move(expression)}
         {}
         void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
         std::unique_ptr<Expr> m_Expression;
@@ -37,8 +37,8 @@ namespace BBTCompiler
     class VariableStmt : public Stmt
     {
     public:
-        VariableStmt(Token name, Expr* initializer)
-            : m_Name{name}, m_Initializer{initializer}
+        VariableStmt(Token name, std::unique_ptr<Expr> initializer)
+            : m_Name{name}, m_Initializer{std::move(initializer)}
         {}
 
         void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }

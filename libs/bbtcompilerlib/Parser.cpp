@@ -85,12 +85,10 @@ namespace BBTCompiler
     {
         Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
 
-        Expr* initializer;
-        if(match({TokenType::EQ}))
-            initializer = parseExpression();
+        std::unique_ptr<Expr> initializer{ match({TokenType::EQ}) ? parseExpression() : nullptr };
 
         consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
-        return std::make_unique<VariableStmt>(name, initializer);
+        return std::make_unique<VariableStmt>(VariableStmt{ name, std::move(initializer) });
     }
 
     std::unique_ptr<Stmt> Parser::parseStatement()
@@ -101,107 +99,107 @@ namespace BBTCompiler
 
     std::unique_ptr<Stmt> Parser::parseExpressionStatement()
     {
-        Expr* expression = parseExpression();
+        auto expression = parseExpression();
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
-        return std::make_unique<ExprStmt>(expression);
+        return std::make_unique<ExprStmt>(expression.release());
     }
 
     std::unique_ptr<Stmt> Parser::parsePrintStatement()
     {
-        Expr* expression{ parseExpression() };
+        std::unique_ptr<Expr> expression{ parseExpression() };
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
-        return std::make_unique<PrintStmt>(expression);
+        return std::make_unique<PrintStmt>(PrintStmt{ std::move(expression) });
     }
 
-    Expr* Parser::parseExpression()
+    std::unique_ptr<Expr> Parser::parseExpression()
     {
         return parseEqualityExpr();
     }
 
-    Expr* Parser::parseAssignmentExpr()
+    std::unique_ptr<Expr> Parser::parseAssignmentExpr()
     {
-        Expr* expr = parseComparisonExpr();
+        const auto expr = parseComparisonExpr();
         while(match({}))
         {
         }
         return nullptr;
     }
 
-    Expr* Parser::parseEqualityExpr()
+    std::unique_ptr<Expr> Parser::parseEqualityExpr()
     {
-        Expr* expression{parseComparisonExpr()};
+        std::unique_ptr<Expr> expression{parseComparisonExpr()};
         while (match({ TokenType::NOT_EQ, TokenType::EQ_EQ }))
         {
             Token& op{ previous() };
-            Expr* right{ parseComparisonExpr() };
-            expression = new BinaryExpr(expression, op, right);
+            std::unique_ptr<Expr> right{ parseComparisonExpr() };
+            expression = std::make_unique<BinaryExpr>(BinaryExpr(expression.release(), op, right.release()));
         }
         return expression;
     }
 
-    Expr* Parser::parseComparisonExpr()
+    std::unique_ptr<Expr> Parser::parseComparisonExpr()
     {
-        Expr* expression{parseAdditiveExpr()};
+        std::unique_ptr<Expr> expression{parseAdditiveExpr()};
         while (match({ TokenType::GREATER, TokenType::LESS,TokenType::GREATER_EQ, TokenType::LESS_EQ }))
         {
             Token& op{ previous() };
-            Expr* right{ parseAdditiveExpr() };
-            expression = new BinaryExpr(expression, op, right);
+            std::unique_ptr<Expr> right{ parseAdditiveExpr() };
+            expression = std::make_unique<BinaryExpr>(BinaryExpr(expression.release(), op, right.release()));
         }
         return expression;
     }
 
-    Expr* Parser::parseAdditiveExpr()
+    std::unique_ptr<Expr> Parser::parseAdditiveExpr()
     {
-        Expr* expression{parseMultiplicativeExpr()};
+        std::unique_ptr<Expr> expression{parseMultiplicativeExpr()};
         while (match({ TokenType::MINUS, TokenType::PLUS }))
         {
             Token& op{ previous() };
-            Expr* right{ parseMultiplicativeExpr() };
-            expression = new BinaryExpr(expression, op, right);
+            std::unique_ptr<Expr> right{ parseMultiplicativeExpr() };
+            expression = std::make_unique<BinaryExpr>(BinaryExpr(expression.release(), op, right.release()));
         }
         return expression;
     }
 
-    Expr* Parser::parseMultiplicativeExpr()
+    std::unique_ptr<Expr> Parser::parseMultiplicativeExpr()
     {
-        Expr* expression{parseUnaryExpr()};
+        std::unique_ptr<Expr> expression{parseUnaryExpr()};
         while (match({ TokenType::SLASH, TokenType::STAR }))
         {
             Token& op{ previous() };
-            Expr* right{ parseUnaryExpr() };
-            expression = new BinaryExpr(expression, op, right);
+            std::unique_ptr<Expr> right{ parseUnaryExpr() };
+            expression = std::make_unique<BinaryExpr>(BinaryExpr(expression.release(), op, right.release()));
         }
         return expression;
     }
 
-    Expr* Parser::parseUnaryExpr()
+    std::unique_ptr<Expr> Parser::parseUnaryExpr()
     {
         if(match({TokenType::NOT, TokenType::MINUS}))
         {
             Token& op{ previous() };
-            Expr* right{ parseUnaryExpr() };
-            return new UnaryExpr(op, right);
+            std::unique_ptr<Expr> right{ parseUnaryExpr() };
+            return std::make_unique<UnaryExpr>(UnaryExpr(op, right.release()));
         }
 
         return parsePrimaryExpr();
     }
 
-    Expr* Parser::parsePrimaryExpr()
+    std::unique_ptr<Expr> Parser::parsePrimaryExpr()
     {
         if (match({
                 TokenType::FALSE, TokenType::FALSE, TokenType::NIL, TokenType::IDENTIFIER,
                 TokenType::INT_LITERAL, TokenType::FLOAT_LITERAL, TokenType::STRING_LITERAL
             }))
         {
-            return new LiteralExpr(previous());
+            return std::make_unique<LiteralExpr>(LiteralExpr(previous()));
         }
 
         if (match({ TokenType::LEFT_PAREN }))
         {
-            Expr* expr = parseExpression();
+            std::unique_ptr<Expr> expr = parseExpression();
             consume(TokenType::RIGHT_PAREN, "expected ')' after expression.");
-            return new GroupedExpr(expr);
+            return std::make_unique<GroupedExpr>(GroupedExpr(expr.release()));
         }
 
         throw std::runtime_error(syntaxErrorMsg("file", peek(), "expected expression."));

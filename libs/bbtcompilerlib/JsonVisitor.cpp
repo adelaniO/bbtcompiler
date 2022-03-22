@@ -82,7 +82,8 @@ namespace BBTCompiler
         exprJson["name"] = stmt.m_Name.value;
         auto& expresson = addNestedJson("expression");
         setCurrentJson(expresson);
-        stmt.m_Initializer->accept(*this);
+        if(stmt.m_Initializer.get())
+            stmt.m_Initializer->accept(*this);
     }
 
     void ASTJSonVisitor::visit(const BlockStmt& stmt)

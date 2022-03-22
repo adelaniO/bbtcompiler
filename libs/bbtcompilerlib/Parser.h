@@ -26,14 +26,14 @@ namespace BBTCompiler
         std::unique_ptr<Stmt> parseStatement();
         std::unique_ptr<Stmt> parseExpressionStatement();
         std::unique_ptr<Stmt> parsePrintStatement();
-        Expr* parseExpression();
-        Expr* parseAssignmentExpr();
-        Expr* parseEqualityExpr();
-        Expr* parseComparisonExpr();
-        Expr* parseAdditiveExpr();
-        Expr* parseMultiplicativeExpr();
-        Expr* parseUnaryExpr();
-        Expr* parsePrimaryExpr();
+        std::unique_ptr<Expr> parseExpression();
+        std::unique_ptr<Expr> parseAssignmentExpr();
+        std::unique_ptr<Expr> parseEqualityExpr();
+        std::unique_ptr<Expr> parseComparisonExpr();
+        std::unique_ptr<Expr> parseAdditiveExpr();
+        std::unique_ptr<Expr> parseMultiplicativeExpr();
+        std::unique_ptr<Expr> parseUnaryExpr();
+        std::unique_ptr<Expr> parsePrimaryExpr();
         std::string syntaxErrorMsg(const std::string& filename, const Token& token, const std::string& msg);
         void synchronize();
     private:
