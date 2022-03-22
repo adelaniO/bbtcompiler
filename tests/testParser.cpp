@@ -38,7 +38,8 @@ TEST_CASE("ParseExpression", "[Expression]")
         statements[0]->accept(jsonVisitor);
         jsonVisitor.print();
         const auto& exprJson{ jsonVisitor.getJson() };
-        CHECK(exprJson.contains("expression"));
+        CHECK(exprJson.contains("name"));
+        CHECK(exprJson.contains("initializer"));
     }
 
     SECTION("Assignment Expression With Initializer")
@@ -50,7 +51,8 @@ TEST_CASE("ParseExpression", "[Expression]")
         statements[0]->accept(jsonVisitor);
         jsonVisitor.print();
         const auto& exprJson{ jsonVisitor.getJson() };
-        CHECK(exprJson.contains("expression"));
+        CHECK(exprJson.contains("name"));
+        CHECK(exprJson.contains("initializer"));
     }
 }
 

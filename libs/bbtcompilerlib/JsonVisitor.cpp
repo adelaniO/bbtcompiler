@@ -80,7 +80,7 @@ namespace BBTCompiler
         auto& exprJson = getCurrentJson();
         exprJson["type"] = "VariableStatement";
         exprJson["name"] = stmt.m_Name.value;
-        auto& expresson = addNestedJson("expression");
+        auto& expresson = addNestedJson("initializer");
         setCurrentJson(expresson);
         if(stmt.m_Initializer.get())
             stmt.m_Initializer->accept(*this);
