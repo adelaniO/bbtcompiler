@@ -43,14 +43,21 @@ namespace BBTCompiler
         return isAtEnd() ? false : peek().type == type;
     }
 
+    bool Parser::match(const TokenType& type)
+    {
+        if (check(type)) {
+            advance();
+            return true;
+        }
+        return false;
+    }
+
     bool Parser::match(const std::vector<TokenType>& types)
     {
         for (TokenType type : types)
         {
-            if (check(type)) {
-                advance();
+            if (match(type))
                 return true;
-            }
         }
         return false;
     }
@@ -69,7 +76,7 @@ namespace BBTCompiler
     {
         try
         {
-            if(match({TokenType::LET}))
+            if(match(TokenType::LET))
                 return parseVariableDeclaration();
             return parseStatement();
         }
@@ -85,7 +92,7 @@ namespace BBTCompiler
     {
         Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
 
-        std::unique_ptr<Expr> initializer{ match({TokenType::EQ}) ? parseExpression() : nullptr };
+        std::unique_ptr<Expr> initializer{ match(TokenType::EQ) ? parseExpression() : nullptr };
 
         consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
         return std::make_unique<VariableStmt>(VariableStmt{ name, std::move(initializer) });
@@ -93,7 +100,7 @@ namespace BBTCompiler
 
     std::unique_ptr<Stmt> Parser::parseStatement()
     {
-        if(match({TokenType::PRINT})) return parsePrintStatement();
+        if(match(TokenType::PRINT)) return parsePrintStatement();
         return parseExpressionStatement();
     }
 
@@ -113,16 +120,16 @@ namespace BBTCompiler
 
     std::unique_ptr<Expr> Parser::parseExpression()
     {
-        return parseEqualityExpr();
+        return parseAssignmentExpr();
     }
 
     std::unique_ptr<Expr> Parser::parseAssignmentExpr()
     {
-        const auto expr = parseComparisonExpr();
-        while(match({}))
+        auto expr = parseEqualityExpr();
+        while(match(TokenType::EQ))
         {
         }
-        return nullptr;
+        return std::move(expr);
     }
 
     std::unique_ptr<Expr> Parser::parseEqualityExpr()
@@ -195,7 +202,7 @@ namespace BBTCompiler
             return std::make_unique<LiteralExpr>(LiteralExpr(previous()));
         }
 
-        if (match({ TokenType::LEFT_PAREN }))
+        if (match(TokenType::LEFT_PAREN))
         {
             std::unique_ptr<Expr> expr = parseExpression();
             consume(TokenType::RIGHT_PAREN, "expected ')' after expression.");

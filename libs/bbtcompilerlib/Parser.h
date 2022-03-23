@@ -20,6 +20,7 @@ namespace BBTCompiler
         Token& consume(TokenType type, const std::string& errorMsg);
         bool isAtEnd();
         bool check(TokenType type);
+        bool match(const TokenType& type);
         bool match(const std::vector<TokenType>& types);
         std::unique_ptr<Stmt> parseDeclaration();
         std::unique_ptr<Stmt> parseVariableDeclaration();
