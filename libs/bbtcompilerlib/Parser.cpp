@@ -72,6 +72,16 @@ namespace BBTCompiler
         return m_Statements;
     }
 
+    std::vector<std::unique_ptr<Stmt>> Parser::parseBlock()
+    {
+        std::vector<std::unique_ptr<Stmt>> statements;
+        while(!check(TokenType::RIGHT_BRACE) && !isAtEnd())
+            statements.push_back(std::move(parseDeclaration()));
+        
+        consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
+    }
+
     std::unique_ptr<Stmt> Parser::parseDeclaration()
     {
         try
@@ -101,6 +111,7 @@ namespace BBTCompiler
     std::unique_ptr<Stmt> Parser::parseStatement()
     {
         if(match(TokenType::PRINT)) return parsePrintStatement();
+        if(match(TokenType::LEFT_BRACE)) return std::make_unique<BlockStmt>(BlockStmt{parseBlock()});
         return parseExpressionStatement();
     }
 
@@ -126,8 +137,18 @@ namespace BBTCompiler
     std::unique_ptr<Expr> Parser::parseAssignmentExpr()
     {
         auto expr = parseEqualityExpr();
-        while(match(TokenType::EQ))
+        if(match(TokenType::EQ))
         {
+            Token equals = previous();
+            auto value = parseAssignmentExpr();
+
+            if(auto varExpr = dynamic_cast<VariableExpr*>(expr.get()))
+            {
+                Token name = varExpr->m_Name;
+                return std::make_unique<AssignmentExpr>(AssignmentExpr(name, value.release()));
+            }
+
+            throw std::runtime_error(syntaxErrorMsg("file", equals, "Invalid assignment target."));
         }
         return std::move(expr);
     }
@@ -195,11 +216,16 @@ namespace BBTCompiler
     std::unique_ptr<Expr> Parser::parsePrimaryExpr()
     {
         if (match({
-                TokenType::FALSE, TokenType::FALSE, TokenType::NIL, TokenType::IDENTIFIER,
-                TokenType::INT_LITERAL, TokenType::FLOAT_LITERAL, TokenType::STRING_LITERAL
+                TokenType::FALSE, TokenType::FALSE, TokenType::NIL, TokenType::INT_LITERAL,
+                TokenType::FLOAT_LITERAL, TokenType::STRING_LITERAL
             }))
         {
             return std::make_unique<LiteralExpr>(LiteralExpr(previous()));
+        }
+
+        if (match(TokenType::IDENTIFIER))
+        {
+            return std::make_unique<VariableExpr>(VariableExpr(previous()));
         }
 
         if (match(TokenType::LEFT_PAREN))

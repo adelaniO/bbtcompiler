@@ -22,6 +22,7 @@ namespace BBTCompiler
         bool check(TokenType type);
         bool match(const TokenType& type);
         bool match(const std::vector<TokenType>& types);
+        std::vector<std::unique_ptr<Stmt>> parseBlock();
         std::unique_ptr<Stmt> parseDeclaration();
         std::unique_ptr<Stmt> parseVariableDeclaration();
         std::unique_ptr<Stmt> parseStatement();

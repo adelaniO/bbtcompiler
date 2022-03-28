@@ -7,17 +7,21 @@ namespace BBTCompiler
     void ASTJSonVisitor::visit(const AssignmentExpr& expr)
     {
         auto& exprJson = getCurrentJson();
-        exprJson["type"] = "BinaryExpression";
-        auto& leftExprJson = addNestedJson("lhs");
+        exprJson["type"] = "AssignmentExpression";
+        exprJson["name"] = expr.m_Name.value;
+        auto& valueExprJson = addNestedJson("value");
+        setCurrentJson(valueExprJson);
+        expr.m_Value->accept(*this);
+
     }
 
     void ASTJSonVisitor::visit(const BinaryExpr& expr)
     {
         auto& exprJson = getCurrentJson();
         exprJson["type"] = "BinaryExpression";
+        exprJson["operator"] = expr.m_Operator.value;
         auto& leftExprJson = addNestedJson("lhs");
         auto& rightExprJson = addNestedJson("rhs");
-        exprJson["operator"] = expr.m_Operator.value;
         setCurrentJson(leftExprJson);
         expr.m_Left->accept(*this);
         setCurrentJson(rightExprJson);
