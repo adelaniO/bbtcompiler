@@ -103,6 +103,22 @@ namespace BBTCompiler
         }
     }
 
+    void ASTJSonVisitor::visit(const IfStmt& stmt)
+    {
+        auto& stmtJson = getCurrentJson();
+        stmtJson["type"] = "IfStatement";
+        auto& conditionExpr = addNestedJson("condition");
+        auto& thenStmt = addNestedJson("then");
+        auto& elseStmt = addNestedJson("else");
+        setCurrentJson(conditionExpr);
+        stmt.m_Condition->accept(*this);
+        setCurrentJson(thenStmt);
+        stmt.m_ThenBranch->accept(*this);
+        setCurrentJson(elseStmt);
+        if(stmt.m_ElseBranch)
+            stmt.m_ElseBranch->accept(*this);
+    }
+
     const Json& ASTJSonVisitor::getJson() const { return m_Json; }
 
     void ASTJSonVisitor::print()

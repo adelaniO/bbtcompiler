@@ -56,4 +56,16 @@ namespace BBTCompiler
         void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
         std::vector<std::unique_ptr<Stmt>> m_Statements;
     };
+
+    class IfStmt : public Stmt
+    {
+    public:
+        IfStmt(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> thenBranch, std::unique_ptr<Stmt> elseBranch)
+            : m_Condition{std::move(condition)},m_ThenBranch{std::move(thenBranch)},m_ElseBranch{std::move(elseBranch)}
+        {}
+
+        void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
+        std::unique_ptr<Expr> m_Condition;
+        std::unique_ptr<Stmt> m_ThenBranch, m_ElseBranch;
+    };
 }

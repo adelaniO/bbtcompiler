@@ -12,6 +12,7 @@ namespace BBTCompiler
     class PrintStmt;
     class VariableStmt;
     class BlockStmt;
+    class IfStmt;
 
     class ASTConstVisitor {
     public:
@@ -25,5 +26,6 @@ namespace BBTCompiler
         virtual void visit(const PrintStmt& stmt) = 0;
         virtual void visit(const VariableStmt& stmt) = 0;
         virtual void visit(const BlockStmt& stmt) = 0;
+        virtual void visit(const IfStmt& stmt) = 0;
     };
 }

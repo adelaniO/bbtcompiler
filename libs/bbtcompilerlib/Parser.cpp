@@ -110,6 +110,7 @@ namespace BBTCompiler
 
     std::unique_ptr<Stmt> Parser::parseStatement()
     {
+        if(match(TokenType::IF)) return parseIfStatement();
         if(match(TokenType::PRINT)) return parsePrintStatement();
         if(match(TokenType::LEFT_BRACE)) return std::make_unique<BlockStmt>(BlockStmt{parseBlock()});
         return parseExpressionStatement();
@@ -127,6 +128,17 @@ namespace BBTCompiler
         std::unique_ptr<Expr> expression{ parseExpression() };
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
         return std::make_unique<PrintStmt>(PrintStmt{ std::move(expression) });
+    }
+
+    std::unique_ptr<Stmt> Parser::parseIfStatement()
+    {
+        consume(TokenType::LEFT_PAREN, "Expect '(' after 'if'.");
+        auto condition = parseExpression();
+        consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
+
+        auto thenBranch = parseStatement();
+        std::unique_ptr<Stmt> elseBranch{ match(TokenType::ELSE) ? parseStatement() : nullptr };
+        return std::make_unique<IfStmt>(IfStmt{ std::move(condition), std::move(thenBranch), std::move(elseBranch) });
     }
 
     std::unique_ptr<Expr> Parser::parseExpression()
@@ -216,7 +228,7 @@ namespace BBTCompiler
     std::unique_ptr<Expr> Parser::parsePrimaryExpr()
     {
         if (match({
-                TokenType::FALSE, TokenType::FALSE, TokenType::NIL, TokenType::INT_LITERAL,
+                TokenType::TRUE, TokenType::FALSE, TokenType::NIL, TokenType::INT_LITERAL,
                 TokenType::FLOAT_LITERAL, TokenType::STRING_LITERAL
             }))
         {

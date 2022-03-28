@@ -25,22 +25,13 @@ TEST_CASE("ParseExpression", "[Expression]")
                 "expression": {
                     "lhs": {
                         "type": "BinaryExpression",
-                        "lhs": {
-                            "type": "PrimaryExpression",
-                            "value": "1"
-                        },
+                        "lhs": { "type": "PrimaryExpression", "value": "1" },
                         "operator": "*",
-                        "rhs": {
-                            "type": "PrimaryExpression",
-                            "value": "2"
-                        }
+                        "rhs": { "type": "PrimaryExpression", "value": "2" }
                     },
                     "type": "BinaryExpression",
                     "operator": "-",
-                    "rhs": {
-                        "type": "PrimaryExpression",
-                        "value": "3"
-                    }
+                    "rhs": { "type": "PrimaryExpression", "value": "3" }
                 }
             }
         )"_json;
@@ -49,7 +40,7 @@ TEST_CASE("ParseExpression", "[Expression]")
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
         statements[0]->accept(jsonVisitor);
-        CHECK(jsonVisitor.getJson() == result);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 
     SECTION("Variable Declaration")
@@ -57,8 +48,8 @@ TEST_CASE("ParseExpression", "[Expression]")
         const auto result = R"(
             {
                 "type": "VariableStatement",
-                "initializer": {},
-                "name": "a"
+                "name": "a",
+                "initializer": {}
             }
         )"_json;
         lexer.scan(std::stringstream("let a;"));
@@ -66,7 +57,7 @@ TEST_CASE("ParseExpression", "[Expression]")
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
         statements[0]->accept(jsonVisitor);
-        CHECK(jsonVisitor.getJson() == result);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 
     SECTION("Assignment Expression")
@@ -77,10 +68,7 @@ TEST_CASE("ParseExpression", "[Expression]")
                 "expression": {
                     "name": "a",
                     "type": "AssignmentExpression",
-                    "value": {
-                        "type": "PrimaryExpression",
-                        "value": "5"
-                    }
+                    "value": { "type": "PrimaryExpression", "value": "5" }
                 }
             }
         )"_json;
@@ -89,7 +77,7 @@ TEST_CASE("ParseExpression", "[Expression]")
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
         statements[0]->accept(jsonVisitor);
-        CHECK(jsonVisitor.getJson() == result);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 
     SECTION("Assignment Expression With Initializer")
@@ -97,10 +85,7 @@ TEST_CASE("ParseExpression", "[Expression]")
         const auto result = R"(
             {
                 "type": "VariableStatement",
-                "initializer": {
-                    "type": "Variable",
-                    "value": "b"
-                },
+                "initializer": { "type": "Variable", "value": "b" },
                 "name": "a"
             }
         )"_json;
@@ -109,7 +94,7 @@ TEST_CASE("ParseExpression", "[Expression]")
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
         statements[0]->accept(jsonVisitor);
-        CHECK(jsonVisitor.getJson() == result);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }
 
@@ -122,10 +107,7 @@ TEST_CASE("ParseStatements", "[Stmt][Statements]")
         const auto result = R"(
             {
                 "type": "PrintStatement",
-                "expression": {
-                    "type": "PrimaryExpression",
-                    "value": "5"
-                }
+                "expression": { "type": "PrimaryExpression", "value": "5" }
             }
         )"_json;
         lexer.scan(std::stringstream("print 5;"));
@@ -133,7 +115,7 @@ TEST_CASE("ParseStatements", "[Stmt][Statements]")
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
         statements[0]->accept(jsonVisitor);
-        CHECK(jsonVisitor.getJson() == result);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }
 
@@ -148,18 +130,12 @@ TEST_CASE("ParseBlockStatements", "[Stmt][Block]")
                 "type": "BlockStatement",
                 "statements": [
                     {
-                        "expression": {
-                            "type": "PrimaryExpression",
-                            "value": "5"
-                        },
-                        "type": "PrintStatement"
+                        "type": "PrintStatement",
+                        "expression": { "type": "PrimaryExpression", "value": "5" }
                     },
                     {
-                        "expression": {
-                            "type": "PrimaryExpression",
-                            "value": "10"
-                        },
-                        "type": "PrintStatement"
+                        "type": "PrintStatement",
+                        "expression": { "type": "PrimaryExpression", "value": "10" }
                     }
                 ]
             }
@@ -169,6 +145,90 @@ TEST_CASE("ParseBlockStatements", "[Stmt][Block]")
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
         statements[0]->accept(jsonVisitor);
-        CHECK(jsonVisitor.getJson() == result);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+}
+
+TEST_CASE("ParseIfStatement", "[Stmt][If]")
+{
+    Lexer lexer;
+    ASTJSonVisitor jsonVisitor;
+    SECTION("If Statement")
+    {
+        const auto result = R"(
+            {
+                "type": "IfStatement",
+                "condition": { "type": "PrimaryExpression", "value": "true" },
+                "then": 
+                    {
+                        "type": "PrintStatement",
+                        "expression": { "type": "PrimaryExpression", "value": "10" }
+                    },
+                "else": {}
+            }
+        )"_json;
+        lexer.scan(std::stringstream("if(true) print 10;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+    SECTION("If Else Statement")
+    {
+        const auto result = R"(
+            {
+                "type": "IfStatement",
+                "condition": { "type": "PrimaryExpression", "value": "true" },
+                "then": 
+                    {
+                        "type": "PrintStatement",
+                        "expression": { "type": "PrimaryExpression", "value": "10" }
+                    },
+                "else":
+                    {
+                        "type": "PrintStatement",
+                        "expression": { "type": "PrimaryExpression", "value": "5" }
+                    }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("if(true) print 10; else print 5;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+
+    SECTION("Nested If Else Statement")
+    {
+        const auto result = R"(
+            {
+                "type": "IfStatement",
+                "condition": { "type": "PrimaryExpression", "value": "true" },
+                "then": 
+                    {
+                        "type": "IfStatement",
+                        "condition": { "type": "PrimaryExpression", "value": "false" },
+                        "then": 
+                            {
+                                "type": "PrintStatement",
+                                "expression": { "type": "PrimaryExpression", "value": "5" }
+                            },
+                        "else":
+                            {
+                                "type": "PrintStatement",
+                                "expression": { "type": "PrimaryExpression", "value": "10" }
+                            }
+                    },
+                "else": {}
+            }
+        )"_json;
+        lexer.scan(std::stringstream("if (true) if (false) print 5; else print 10;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }

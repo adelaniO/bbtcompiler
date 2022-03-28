@@ -27,6 +27,8 @@ namespace BBTCompiler
 
         void visit(const BlockStmt& stmt) override;
 
+        void visit(const IfStmt& stmt) override;
+
         const Json& getJson() const;
 
         void print();
