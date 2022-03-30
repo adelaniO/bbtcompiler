@@ -24,9 +24,10 @@ namespace BBTCompiler
         LEFT_BRACE, RIGHT_BRACE, LEFT_PAREN, RIGHT_PAREN,
         LEFT_BRACKET, RIGHT_BRACKET, DOT, COMMA, SEMICOLON, COLON,
         PLUS, MINUS, STAR, SLASH, AMPERSAND, LESS, GREATER, EQ, NOT,
+        PIPE,
         // Double Operators
         PLUS_PLUS, MINUS_MINUS, PLUS_EQ, MINUS_EQ, EQ_EQ, NOT_EQ,
-        GREATER_EQ, LESS_EQ,
+        GREATER_EQ, LESS_EQ, OR, AND,
 
         END,
         INVALID
@@ -73,7 +74,8 @@ namespace BBTCompiler
         {'>', TokenType::GREATER},
         {'<', TokenType::LESS},
         {'=', TokenType::EQ},
-        {'!', TokenType::NOT}
+        {'!', TokenType::NOT},
+        {'|', TokenType::PIPE}
     };
 
     const std::unordered_map<std::string, TokenType> PairedOperators{
@@ -84,7 +86,9 @@ namespace BBTCompiler
         {"+=", TokenType::PLUS_EQ},
         {"-+", TokenType::MINUS_EQ},
         {">=", TokenType::GREATER_EQ},
-        {"<=", TokenType::LESS_EQ}
+        {"<=", TokenType::LESS_EQ},
+        {"||", TokenType::OR},
+        {"&&", TokenType::AND},
     };
 
     struct Token

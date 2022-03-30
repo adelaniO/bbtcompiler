@@ -31,6 +31,8 @@ namespace BBTCompiler
         std::unique_ptr<Stmt> parseIfStatement();
         std::unique_ptr<Expr> parseExpression();
         std::unique_ptr<Expr> parseAssignmentExpr();
+        std::unique_ptr<Expr> parseOrExpr();
+        std::unique_ptr<Expr> parseAndExpr();
         std::unique_ptr<Expr> parseEqualityExpr();
         std::unique_ptr<Expr> parseComparisonExpr();
         std::unique_ptr<Expr> parseAdditiveExpr();

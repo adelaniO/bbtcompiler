@@ -232,3 +232,49 @@ TEST_CASE("ParseIfStatement", "[Stmt][If]")
         CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }
+
+TEST_CASE("ParseLogicStatement", "[Stmt][And][Or]")
+{
+    Lexer lexer;
+    ASTJSonVisitor jsonVisitor;
+    SECTION("Logical And Statement")
+    {
+        const auto result = R"(
+            {
+                "type": "ExpressionStatement",
+                "expression": {
+                    "type": "BinaryExpression",
+                    "lhs": { "type": "Variable", "value": "a" },
+                    "operator": "&&",
+                    "rhs": { "type": "Variable", "value": "b" }
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("a && b;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+     SECTION("Logical Or Statement")
+    {
+        const auto result = R"(
+            {
+                "type": "ExpressionStatement",
+                "expression": {
+                    "type": "BinaryExpression",
+                    "lhs": { "type": "Variable", "value": "a" },
+                    "operator": "||",
+                    "rhs": { "type": "Variable", "value": "b" }
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("a || b;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+}

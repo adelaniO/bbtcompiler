@@ -119,7 +119,7 @@ namespace BBTCompiler
     std::unique_ptr<Stmt> Parser::parseExpressionStatement()
     {
         auto expression = parseExpression();
-        consume(TokenType::SEMICOLON, "Expect ';' after value.");
+        consume(TokenType::SEMICOLON, "Expect ';' after expression.");
         return std::make_unique<ExprStmt>(expression.release());
     }
 
@@ -148,7 +148,7 @@ namespace BBTCompiler
 
     std::unique_ptr<Expr> Parser::parseAssignmentExpr()
     {
-        auto expr = parseEqualityExpr();
+        auto expr = parseOrExpr();
         if(match(TokenType::EQ))
         {
             Token equals = previous();
@@ -163,6 +163,30 @@ namespace BBTCompiler
             throw std::runtime_error(syntaxErrorMsg("file", equals, "Invalid assignment target."));
         }
         return std::move(expr);
+    }
+
+    std::unique_ptr<Expr> Parser::parseOrExpr()
+    {
+        auto expr = parseAndExpr();
+        while(match(TokenType::OR))
+        {
+            Token op = previous();
+            auto right = parseAndExpr();
+            expr = std::make_unique<BinaryExpr>(BinaryExpr{expr.release(), op, right.release()});
+        }
+        return expr;
+    }
+
+    std::unique_ptr<Expr> Parser::parseAndExpr()
+    {
+        auto expr = parseEqualityExpr();
+        while(match(TokenType::AND))
+        {
+            Token op = previous();
+            auto right = parseEqualityExpr();
+            expr = std::make_unique<BinaryExpr>(BinaryExpr{expr.release(), op, right.release()});
+        }
+        return expr;
     }
 
     std::unique_ptr<Expr> Parser::parseEqualityExpr()
