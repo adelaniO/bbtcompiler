@@ -380,4 +380,28 @@ TEST_CASE("CallExpression", "[Call][Functions]")
         statements[0]->accept(jsonVisitor);
         CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
+
+    SECTION("Call With 3 Arguements")
+    {
+        const auto result = R"(
+            {
+                "type": "ExpressionStatement",
+                "expression": {
+                    "type": "CallExpression",
+                    "callee": { "type": "Variable", "value": "test" },
+                    "arguements": [
+                            { "type": "Variable", "value": "a" },
+                            { "type": "PrimaryExpression", "value": "1" },
+                            { "type": "Variable", "value": "b" }
+                        ]
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("test(a, 1, b);"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
 }
