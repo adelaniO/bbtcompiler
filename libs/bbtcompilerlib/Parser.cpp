@@ -302,7 +302,21 @@ namespace BBTCompiler
             return std::make_unique<UnaryExpr>(UnaryExpr(op, right.release()));
         }
 
-        return parsePrimaryExpr();
+        return parseCallExpr();
+    }
+
+    std::unique_ptr<Expr> Parser::parseCallExpr()
+    {
+        auto expr{ parsePrimaryExpr() };
+
+        while(true)
+        {
+            if(match(TokenType::LEFT_PAREN))
+                expr = finishCall(std::move(expr));
+            else
+                break;
+        }
+        return expr;
     }
 
     std::unique_ptr<Expr> Parser::parsePrimaryExpr()
@@ -328,6 +342,20 @@ namespace BBTCompiler
         }
 
         throw std::runtime_error(syntaxErrorMsg("file", peek(), "expected expression."));
+    }
+
+    std::unique_ptr<Expr> Parser::finishCall(std::unique_ptr<Expr> callee)
+    {
+        std::vector<std::unique_ptr<Expr>> args;
+        if(!check(TokenType::RIGHT_PAREN))
+        {
+            do {
+                args.push_back(parseExpression());
+            } while (match(TokenType::COMMA));
+        }
+
+        Token paren = consume(TokenType::RIGHT_PAREN, "Expect '(' after arguments");
+        return std::make_unique<CallExpr>(CallExpr{ std::move(callee), paren, std::move(args) });
     }
 
     std::string Parser::syntaxErrorMsg(const std::string& filename, const Token& token, const std::string& msg)

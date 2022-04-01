@@ -61,6 +61,22 @@ namespace BBTCompiler
         exprJson["value"] = expr.m_Name.value;
     }
 
+    void ASTJSonVisitor::visit(const CallExpr& expr)
+    {
+        auto& exprJson = getCurrentJson();
+        exprJson["type"] = "CallExpression";
+        auto& callee = addNestedJson("callee");
+        auto& argsJsonArray = addNestedJsonArray("arguements");
+        setCurrentJson(callee);
+        expr.m_Callee->accept(*this);
+        for (const auto& arguement : expr.m_Args)
+        {
+            auto& element = argsJsonArray.emplace_back(Json({}));
+            setCurrentJson(element);
+            arguement->accept(*this);
+        }
+    }
+
     void ASTJSonVisitor::visit(const PrintStmt& stmt)
     {
         auto& exprJson = getCurrentJson();
@@ -95,7 +111,7 @@ namespace BBTCompiler
         auto& stmtJson = getCurrentJson();
         stmtJson["type"] = "BlockStatement";
         auto& stmtJsonArray = addNestedJsonArray("statements");
-        for (auto& statement : stmt.m_Statements)
+        for (const auto& statement : stmt.m_Statements)
         {
             auto& element = stmtJsonArray.emplace_back(Json({}));
             setCurrentJson(element);

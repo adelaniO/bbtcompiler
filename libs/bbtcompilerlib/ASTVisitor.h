@@ -8,6 +8,7 @@ namespace BBTCompiler
     class LiteralExpr;
     class GroupedExpr;
     class VariableExpr;
+    class CallExpr;
     class ExprStmt;
     class PrintStmt;
     class VariableStmt;
@@ -23,6 +24,7 @@ namespace BBTCompiler
         virtual void visit(const LiteralExpr& expr) = 0;
         virtual void visit(const GroupedExpr& expr) = 0;
         virtual void visit(const VariableExpr& expr) = 0;
+        virtual void visit(const CallExpr& expr) = 0;
         virtual void visit(const ExprStmt& stmt) = 0;
         virtual void visit(const PrintStmt& stmt) = 0;
         virtual void visit(const VariableStmt& stmt) = 0;

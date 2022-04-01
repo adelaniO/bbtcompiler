@@ -355,3 +355,29 @@ TEST_CASE("ParseLoopStatements", "[Stmt][Loop][While][For]")
         CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }
+
+
+TEST_CASE("CallExpression", "[Call][Functions]")
+{
+    Lexer lexer;
+    ASTJSonVisitor jsonVisitor;
+    SECTION("Call Without Arguements")
+    {
+        const auto result = R"(
+            {
+                "type": "ExpressionStatement",
+                "expression": {
+                    "type": "CallExpression",
+                    "callee": { "type": "Variable", "value": "test" },
+                    "arguements": []
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("test();"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+}

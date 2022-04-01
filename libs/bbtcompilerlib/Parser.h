@@ -40,7 +40,9 @@ namespace BBTCompiler
         std::unique_ptr<Expr> parseAdditiveExpr();
         std::unique_ptr<Expr> parseMultiplicativeExpr();
         std::unique_ptr<Expr> parseUnaryExpr();
+        std::unique_ptr<Expr> parseCallExpr();
         std::unique_ptr<Expr> parsePrimaryExpr();
+        std::unique_ptr<Expr> finishCall(std::unique_ptr<Expr> callee);
         std::string syntaxErrorMsg(const std::string& filename, const Token& token, const std::string& msg);
         void synchronize();
     private:

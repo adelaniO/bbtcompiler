@@ -19,6 +19,8 @@ namespace BBTCompiler
 
         void visit(const VariableExpr& expr) override;
 
+        void visit(const CallExpr& expr) override;
+
         void visit(const PrintStmt& stmt) override;
 
         void visit(const ExprStmt& stmt) override;

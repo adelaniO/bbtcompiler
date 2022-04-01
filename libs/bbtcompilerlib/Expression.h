@@ -107,4 +107,19 @@ namespace BBTCompiler
         }
         Token m_Name;
     };
+
+    class CallExpr : public Expr
+    {
+    public:
+        CallExpr(std::unique_ptr<Expr> callee, Token paren, std::vector<std::unique_ptr<Expr>> arguements)
+            : m_Callee{ std::move(callee) }, m_Paren{ paren }, m_Args{ std::move(arguements) }
+        {}
+        virtual void accept(ASTConstVisitor& visitor) const override
+        {
+            visitor.visit(*this);
+        }
+        Token m_Paren;
+        std::vector<std::unique_ptr<Expr>> m_Args;
+        std::unique_ptr<Expr> m_Callee;
+    };
 }
