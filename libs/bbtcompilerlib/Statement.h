@@ -68,4 +68,16 @@ namespace BBTCompiler
         std::unique_ptr<Expr> m_Condition;
         std::unique_ptr<Stmt> m_ThenBranch, m_ElseBranch;
     };
+
+    class WhileStmt : public Stmt
+    {
+    public:
+        WhileStmt(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body)
+            : m_Condition{std::move(condition)},m_Body{std::move(body)}
+        {}
+
+        void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
+        std::unique_ptr<Expr> m_Condition;
+        std::unique_ptr<Stmt> m_Body;
+    };
 }

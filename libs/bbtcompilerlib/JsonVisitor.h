@@ -29,6 +29,8 @@ namespace BBTCompiler
 
         void visit(const IfStmt& stmt) override;
 
+        void visit(const WhileStmt& stmt) override;
+
         const Json& getJson() const;
 
         void print();

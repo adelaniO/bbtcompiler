@@ -278,3 +278,80 @@ TEST_CASE("ParseLogicStatement", "[Stmt][And][Or]")
         CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }
+
+TEST_CASE("ParseLoopStatements", "[Stmt][Loop][While][For]")
+{
+    Lexer lexer;
+    ASTJSonVisitor jsonVisitor;
+    SECTION("While Loop")
+    {
+        const auto result = R"(
+            {
+                "type": "WhileStatement",
+                "condition": { "type": "PrimaryExpression", "value": "true" },
+                "body": {
+                    "type": "PrintStatement",
+                    "expression": { "type": "PrimaryExpression", "value": "10" }
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("while(true) print 10;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+    SECTION("For Loop")
+    {
+        const auto result = R"(
+            {
+                "type": "BlockStatement",
+                "statements": [
+                    {
+                        "type": "VariableStatement",
+                        "name": "i",
+                        "initializer": { "type": "PrimaryExpression", "value": "0" }
+                    },
+                    {
+                        "type": "WhileStatement",
+                        "condition": {
+                            "type": "BinaryExpression",
+                            "operator": "<",
+                            "lhs": { "type": "Variable", "value": "i" },
+                            "rhs": { "type": "PrimaryExpression", "value": "10" }
+                        },
+                        "body": {
+                            "type": "BlockStatement",
+                            "statements": [
+                                {
+                                    "type": "PrintStatement",
+                                    "expression": { "type": "Variable", "value": "i" }
+                                },
+                                {
+                                    "type": "ExpressionStatement",
+                                    "expression": {
+                                        "type": "AssignmentExpression",
+                                        "name": "i",
+                                        "value": {
+                                            "type": "BinaryExpression",
+                                            "operator": "+",
+                                            "lhs": { "type": "Variable", "value": "i" },
+                                            "rhs": { "type": "PrimaryExpression", "value": "1" }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        )"_json;
+        lexer.scan(std::stringstream("for (let i = 0; i < 10; i = i + 1) print i;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+}

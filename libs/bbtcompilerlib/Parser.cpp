@@ -110,8 +110,10 @@ namespace BBTCompiler
 
     std::unique_ptr<Stmt> Parser::parseStatement()
     {
+        if(match(TokenType::FOR)) return parseForStatement();
         if(match(TokenType::IF)) return parseIfStatement();
         if(match(TokenType::PRINT)) return parsePrintStatement();
+        if(match(TokenType::WHILE)) return parseWhileStatement();
         if(match(TokenType::LEFT_BRACE)) return std::make_unique<BlockStmt>(BlockStmt{parseBlock()});
         return parseExpressionStatement();
     }
@@ -128,6 +130,60 @@ namespace BBTCompiler
         std::unique_ptr<Expr> expression{ parseExpression() };
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
         return std::make_unique<PrintStmt>(PrintStmt{ std::move(expression) });
+    }
+
+    std::unique_ptr<Stmt> Parser::parseForStatement()
+    {
+        consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
+
+        std::unique_ptr<Stmt> initializer{};
+        if(match(TokenType::SEMICOLON))
+            initializer.reset();
+        if(match(TokenType::LET))
+            initializer = parseVariableDeclaration();
+        else
+            initializer = parseExpressionStatement();
+
+        std::unique_ptr<Expr> condition{};
+        if(!check(TokenType::SEMICOLON))
+            condition = parseExpression();
+
+        consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+
+        std::unique_ptr<Expr> increment{};
+        if(!check(TokenType::RIGHT_PAREN))
+            increment = parseExpression();
+        consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
+
+        std::unique_ptr<Stmt> body = parseStatement();
+        if(increment)
+        {
+            std::vector<std::unique_ptr<Stmt>> innerBlock;
+            innerBlock.push_back(std::move(body));
+            innerBlock.push_back(std::make_unique<ExprStmt>(ExprStmt{ increment.release() }));
+            body = std::make_unique<BlockStmt>(std::move(innerBlock));
+        }
+
+        if(!condition) condition = std::make_unique<LiteralExpr>(LiteralExpr{ Token{TokenType::TRUE,{},"true"} });
+        body = std::make_unique<WhileStmt>(WhileStmt{ std::move(condition), std::move(body) });
+
+        if(initializer)
+        {
+            std::vector<std::unique_ptr<Stmt>> innerBlock;
+            innerBlock.push_back(std::move(initializer));
+            innerBlock.push_back(std::move(body));
+            body = std::make_unique<BlockStmt>(std::move(innerBlock));
+        }
+        return body;
+    }
+
+    std::unique_ptr<Stmt> Parser::parseWhileStatement()
+    {
+        consume(TokenType::LEFT_PAREN, "Expect '(' after 'while'.");
+        auto condition{ parseExpression() };
+        consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+        auto body{parseStatement()};
+        return std::make_unique<WhileStmt>(WhileStmt{ std::move(condition), std::move(body) });
     }
 
     std::unique_ptr<Stmt> Parser::parseIfStatement()

@@ -119,6 +119,18 @@ namespace BBTCompiler
             stmt.m_ElseBranch->accept(*this);
     }
 
+    void ASTJSonVisitor::visit(const WhileStmt& stmt)
+    {
+        auto& stmtJson = getCurrentJson();
+        stmtJson["type"] = "WhileStatement";
+        auto& conditionExpr = addNestedJson("condition");
+        auto& bodyStmt = addNestedJson("body");
+        setCurrentJson(conditionExpr);
+        stmt.m_Condition->accept(*this);
+        setCurrentJson(bodyStmt);
+        stmt.m_Body->accept(*this);
+    }
+
     const Json& ASTJSonVisitor::getJson() const { return m_Json; }
 
     void ASTJSonVisitor::print()
