@@ -147,6 +147,19 @@ namespace BBTCompiler
         stmt.m_Body->accept(*this);
     }
 
+    void ASTJSonVisitor::visit(const FuncStmt& stmt)
+    {
+        auto& stmtJson = getCurrentJson();
+        stmtJson["type"] = "FunctionStatement";
+        auto& stmtJsonArray = addNestedJsonArray("statements");
+        for (const auto& parameter : stmt.m_Params)
+        {
+            auto& element = stmtJsonArray.emplace_back(Json({}));
+            setCurrentJson(element);
+            //statement->accept(*this);
+        }
+    }
+
     const Json& ASTJSonVisitor::getJson() const { return m_Json; }
 
     void ASTJSonVisitor::print()

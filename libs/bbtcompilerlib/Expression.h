@@ -11,11 +11,8 @@ namespace BBTCompiler
     {
     public:
         virtual ~Expr() = default;
-        size_t getLevel() const { return m_Level; }
-        void setLevel(size_t level) { m_Level = level; }
         virtual void accept(ASTConstVisitor& visitor) const = 0;
     private:
-        size_t m_Level{};
     };
 
     class AssignmentExpr : public Expr
@@ -23,9 +20,7 @@ namespace BBTCompiler
     public:
         AssignmentExpr(Token name, Expr* value)
             : m_Name{ name }, m_Value{ value }
-        {
-            m_Value->setLevel(getLevel()+1);
-        }
+        {}
         virtual void accept(ASTConstVisitor& visitor) const override
         {
             visitor.visit(*this);
@@ -39,10 +34,7 @@ namespace BBTCompiler
     public:
         BinaryExpr(Expr* left, Token op, Expr* right)
             : m_Left{ left }, m_Operator{ op }, m_Right{ right }
-        {
-            m_Left->setLevel(getLevel()+1);
-            m_Right->setLevel(getLevel()+1);
-        }
+        {}
         virtual void accept(ASTConstVisitor& visitor) const override
         {
             visitor.visit(*this);
@@ -56,9 +48,7 @@ namespace BBTCompiler
     public:
         UnaryExpr(Token op, Expr* right)
             : m_Operator{ op }, m_Right{ right }
-        {
-            m_Right->setLevel(getLevel()+1);
-        }
+        {}
         virtual void accept(ASTConstVisitor& visitor) const override
         {
             visitor.visit(*this);
@@ -72,9 +62,7 @@ namespace BBTCompiler
     public:
         GroupedExpr(Expr* expr)
             : m_Expression{ expr }
-        {
-            m_Expression->setLevel(getLevel() + 1);
-        }
+        {}
         virtual void accept(ASTConstVisitor& visitor) const override
         {
             visitor.visit(*this);

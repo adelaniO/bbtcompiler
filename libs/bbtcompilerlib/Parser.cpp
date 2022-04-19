@@ -86,8 +86,8 @@ namespace BBTCompiler
     {
         try
         {
-            if(match(TokenType::LET))
-                return parseVariableDeclaration();
+            if(match(TokenType::FN)) return parseFunctionStatement("function");
+            if(match(TokenType::LET)) return parseVariableDeclaration();
             return parseStatement();
         }
         catch (const std::exception& e)
@@ -123,6 +123,24 @@ namespace BBTCompiler
         auto expression = parseExpression();
         consume(TokenType::SEMICOLON, "Expect ';' after expression.");
         return std::make_unique<ExprStmt>(expression.release());
+    }
+
+    std::unique_ptr<Stmt> Parser::parseFunctionStatement(const std::string& kind)
+    {
+        Token name{ consume(TokenType::IDENTIFIER, "Expect " + kind + "name.") };
+        consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+        std::vector<Token> parameters;
+        if(!check(TokenType::RIGHT_PAREN))
+        {
+            do {
+                parameters.emplace_back(consume(TokenType::IDENTIFIER, "Expect parameter name."));
+            } while (match(TokenType::COMMA));
+        }
+        consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+
+        consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + "body.");
+        auto body{ parseBlock() };
+        return std::make_unique<FuncStmt>(name, std::move(parameters), std::move(body));
     }
 
     std::unique_ptr<Stmt> Parser::parsePrintStatement()

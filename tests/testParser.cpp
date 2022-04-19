@@ -356,7 +356,6 @@ TEST_CASE("ParseLoopStatements", "[Stmt][Loop][While][For]")
     }
 }
 
-
 TEST_CASE("CallExpression", "[Call][Functions]")
 {
     Lexer lexer;
@@ -405,3 +404,30 @@ TEST_CASE("CallExpression", "[Call][Functions]")
         CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
     }
 }
+
+TEST_CASE("FunctionStatment", "[definition][Functions]")
+{
+    Lexer lexer;
+    ASTJSonVisitor jsonVisitor;
+    SECTION("SimpleFunction")
+    {
+        const auto result = R"(
+            {
+                "type": "ExpressionStatement",
+                "expression": {
+                    "type": "CallExpression",
+                    "callee": { "type": "Variable", "value": "test" },
+                    "arguements": []
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("fn test() {}"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        jsonVisitor.print();
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+}
+

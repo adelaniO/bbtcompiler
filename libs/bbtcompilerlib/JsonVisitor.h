@@ -33,6 +33,8 @@ namespace BBTCompiler
 
         void visit(const WhileStmt& stmt) override;
 
+        void visit(const FuncStmt& stmt) override;
+
         const Json& getJson() const;
 
         void print();
