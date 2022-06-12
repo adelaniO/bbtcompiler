@@ -16,10 +16,16 @@ namespace BBTCompiler
     {
         IDENTIFIER,
         INT_LITERAL, FLOAT_LITERAL, STRING_LITERAL,
-        //Keywords
-        IF, ELSE, FOR, WHILE, CONTINUE, BREAK, INT, CHAR, BOOL,
-        FLOAT, CONST, STATIC, VOID, TRUE, FALSE, NIL, RETURN,
-        PRINT, LET, FN,
+        // Types
+        INT, CHAR, BOOL, FLOAT,
+        // Statements
+        IF, ELSE, FOR, WHILE, CONTINUE, BREAK,
+        TRUE, FALSE, NIL, RETURN,
+        PRINT, LET,
+        // Declarations
+        FN, CLASS,
+        // Type Qualifiers
+        CONST,
         // Operators
         LEFT_BRACE, RIGHT_BRACE, LEFT_PAREN, RIGHT_PAREN,
         LEFT_BRACKET, RIGHT_BRACKET, DOT, COMMA, SEMICOLON, COLON,
@@ -34,26 +40,30 @@ namespace BBTCompiler
     };
 
     const std::unordered_map<std::string, TokenType> Keywords{
+        // Type Qualifiers
+        {"const",       TokenType::CONST},
+        // types
+        {"int",         TokenType::INT},
+        {"char",        TokenType::CHAR},
+        {"bool",     TokenType::BOOL},
+        {"float",       TokenType::FLOAT},
+        // bool literals
+        {"true",        TokenType::TRUE},
+        {"false",       TokenType::FALSE},
+        {"null",        TokenType::NIL},
+        // Statements
+        {"return",      TokenType::RETURN},
+        {"print",       TokenType::PRINT},
+        {"let",         TokenType::LET},
         {"if",          TokenType::IF},
         {"else",        TokenType::ELSE},
         {"while",       TokenType::WHILE},
         {"for",         TokenType::FOR},
         {"continue",    TokenType::CONTINUE},
         {"break",       TokenType::BREAK},
-        {"int",         TokenType::INT},
-        {"char",        TokenType::CHAR},
-        {"boolean",     TokenType::BOOL},
-        {"float",       TokenType::FLOAT},
-        {"const",       TokenType::CONST},
-        {"static",      TokenType::STATIC},
-        {"void",        TokenType::VOID},
-        {"true",        TokenType::TRUE},
-        {"false",       TokenType::FALSE},
-        {"null",        TokenType::NIL},
-        {"return",      TokenType::RETURN},
-        {"print",       TokenType::PRINT},
-        {"let",         TokenType::LET},
-        {"fn",          TokenType::FN}
+        // Declarations
+        {"fn",          TokenType::FN},
+        {"class",          TokenType::CLASS}
     };
 
     const std::unordered_map<unsigned char, TokenType> Operators{

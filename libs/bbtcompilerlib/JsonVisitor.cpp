@@ -151,12 +151,20 @@ namespace BBTCompiler
     {
         auto& stmtJson = getCurrentJson();
         stmtJson["type"] = "FunctionStatement";
+        stmtJson["name"] = stmt.m_Name.value;
+        auto& paramsJsonArray = addNestedJsonArray("parameters");
         auto& stmtJsonArray = addNestedJsonArray("statements");
         for (const auto& parameter : stmt.m_Params)
         {
+            auto& element = paramsJsonArray.emplace_back(Json({}));
+            element["name"] = parameter.first.value;
+            element["type"] = parameter.second.value;
+        }
+        for(const auto& statement : stmt.m_Body)
+        {
             auto& element = stmtJsonArray.emplace_back(Json({}));
             setCurrentJson(element);
-            //statement->accept(*this);
+            statement->accept(*this);
         }
     }
 
@@ -166,6 +174,12 @@ namespace BBTCompiler
     {
         std::cout << '\n' << m_Json.dump(4) << '\n';
     }
+
+    std::string ASTJSonVisitor::toString()
+    {
+        return m_Json.dump(4);
+    }
+
     Json& ASTJSonVisitor::addNestedJson(const std::string& name)
     {
         (*m_CurrentJson)[name] = Json({});

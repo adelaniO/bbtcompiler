@@ -37,12 +37,12 @@ namespace BBTCompiler
     class VariableStmt : public Stmt
     {
     public:
-        VariableStmt(Token name, std::unique_ptr<Expr> initializer)
-            : m_Name{name}, m_Initializer{std::move(initializer)}
+        VariableStmt(Token name, Token type, std::unique_ptr<Expr> initializer)
+            : m_Name{name}, m_Type{type}, m_Initializer{std::move(initializer)}
         {}
 
         void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
-        Token m_Name;
+        Token m_Name, m_Type;
         std::unique_ptr<Expr> m_Initializer;
     };
 
@@ -84,13 +84,13 @@ namespace BBTCompiler
     class FuncStmt : public Stmt
     {
     public:
-        FuncStmt(Token name, std::vector<Token> params, std::vector<std::unique_ptr<Stmt>> body)
+        FuncStmt(Token name, std::vector<std::pair<Token,Token>> params, std::vector<std::unique_ptr<Stmt>> body)
             : m_Name{ name }, m_Params{ std::move(params) }, m_Body{ std::move(body) }
         {}
 
         void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
         Token m_Name;
-        std::vector<Token> m_Params;
+        std::vector<std::pair<Token,Token>> m_Params;
         std::vector<std::unique_ptr<Stmt>> m_Body;
     };
 }

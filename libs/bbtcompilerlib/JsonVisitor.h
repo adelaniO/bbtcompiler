@@ -38,6 +38,7 @@ namespace BBTCompiler
         const Json& getJson() const;
 
         void print();
+        std::string toString();
     private:
         Json& getCurrentJson() {return *m_CurrentJson; };
         Json& addNestedJson(const std::string& name);

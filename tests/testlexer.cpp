@@ -216,7 +216,7 @@ TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
 
     SECTION("mixed keywords and itentifiers")
     {
-        auto ss = std::stringstream("if _test void t_10");
+        auto ss = std::stringstream("if _test char t_10");
         lexer.scan(ss);
         REQUIRE(tokens.size() == 5);
         CHECK(tokens[0].type == TokenType::IF);
@@ -226,7 +226,7 @@ TEST_CASE("LexerIdentifiers", "[Keywords][Identifiers]")
         CHECK(tokens[1].type == TokenType::IDENTIFIER);
         CHECK(tokens[1].position.column == 4);
         CHECK(tokens[1].position.line == 1);
-        CHECK(tokens[2].type == TokenType::VOID);
+        CHECK(tokens[2].type == TokenType::CHAR);
         CHECK(tokens[2].position.column == 10);
         CHECK(tokens[2].position.line == 1);
         CHECK(tokens[3].value == "t_10");

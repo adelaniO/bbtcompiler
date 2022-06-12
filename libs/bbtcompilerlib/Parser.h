@@ -1,13 +1,16 @@
 #pragma once
 
-#include <vector>
 #include <string>
 #include "Lexer.h"
 #include "Expression.h"
 #include "Statement.h"
+#include "SymbolTable.h"
+
 
 namespace BBTCompiler
 {
+    class SymbolTable;
+
     class Parser
     {
     public:
@@ -20,10 +23,12 @@ namespace BBTCompiler
         Token& consume(TokenType type, const std::string& errorMsg);
         bool isAtEnd();
         bool check(TokenType type);
+        bool check(const std::vector<TokenType>& types);
         bool match(const TokenType& type);
         bool match(const std::vector<TokenType>& types);
         std::vector<std::unique_ptr<Stmt>> parseBlock();
         std::unique_ptr<Stmt> parseDeclaration();
+        std::pair<Token, Token> parseNewVariable();
         std::unique_ptr<Stmt> parseVariableDeclaration();
         std::unique_ptr<Stmt> parseStatement();
         std::unique_ptr<Stmt> parseExpressionStatement();
@@ -48,6 +53,7 @@ namespace BBTCompiler
         void synchronize();
     private:
         std::vector<Token>& m_Tokens;
+        SymbolTable m_SymbolTable;
         std::vector<Token>::iterator m_Current;
         std::vector<std::unique_ptr<Stmt>> m_Statements;
     };

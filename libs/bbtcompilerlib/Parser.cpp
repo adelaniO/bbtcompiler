@@ -43,6 +43,13 @@ namespace BBTCompiler
         return isAtEnd() ? false : peek().type == type;
     }
 
+    bool Parser::check(const std::vector<TokenType>& types)
+    {
+        for(const auto& type : types)
+            if(peek().type == type) return true;
+        return false;
+    }
+
     bool Parser::match(const TokenType& type)
     {
         if (check(type)) {
@@ -97,15 +104,35 @@ namespace BBTCompiler
         }
         return nullptr;
     }
+
+    std::pair<Token, Token> Parser::parseNewVariable()
+    {
+        std::pair<Token, Token> result;
+        result.first = consume(TokenType::IDENTIFIER, "Expect variable name.");
+        consume(TokenType::COLON, "Expect ': <variable_type>' after variable name.");
+        if(check({ TokenType::INT, TokenType::CHAR, TokenType::BOOL, TokenType::FLOAT }))
+        {
+            result.second = advance();
+        }
+        else if(check(TokenType::IDENTIFIER))
+        {
+
+            result.second = advance();
+        }
+        else
+        {
+            throw std::runtime_error(syntaxErrorMsg("file", peek(), "Expect '<variable type>'."));
+        }
+        return result;
+    }
     
     std::unique_ptr<Stmt> Parser::parseVariableDeclaration()
     {
-        Token name = consume(TokenType::IDENTIFIER, "Expect variable name.");
-
+        const auto [name, type] = parseNewVariable();
         std::unique_ptr<Expr> initializer{ match(TokenType::EQ) ? parseExpression() : nullptr };
 
         consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
-        return std::make_unique<VariableStmt>(VariableStmt{ name, std::move(initializer) });
+        return std::make_unique<VariableStmt>(VariableStmt{ name, type, std::move(initializer) });
     }
 
     std::unique_ptr<Stmt> Parser::parseStatement()
@@ -129,11 +156,11 @@ namespace BBTCompiler
     {
         Token name{ consume(TokenType::IDENTIFIER, "Expect " + kind + "name.") };
         consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
-        std::vector<Token> parameters;
+        std::vector<std::pair<Token,Token>> parameters;
         if(!check(TokenType::RIGHT_PAREN))
         {
             do {
-                parameters.emplace_back(consume(TokenType::IDENTIFIER, "Expect parameter name."));
+                parameters.emplace_back(parseNewVariable());
             } while (match(TokenType::COMMA));
         }
         consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");

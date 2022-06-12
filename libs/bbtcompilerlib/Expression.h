@@ -94,6 +94,7 @@ namespace BBTCompiler
             visitor.visit(*this);
         }
         Token m_Name;
+        Token m_Type;
     };
 
     class CallExpr : public Expr
