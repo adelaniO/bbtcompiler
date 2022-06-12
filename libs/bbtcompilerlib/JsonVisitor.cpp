@@ -152,6 +152,7 @@ namespace BBTCompiler
         auto& stmtJson = getCurrentJson();
         stmtJson["type"] = "FunctionStatement";
         stmtJson["name"] = stmt.m_Name.value;
+        stmtJson["returnType"] = stmt.m_ReturnType.value.empty() ? "void" : stmt.m_ReturnType.value;
         auto& paramsJsonArray = addNestedJsonArray("parameters");
         auto& stmtJsonArray = addNestedJsonArray("statements");
         for (const auto& parameter : stmt.m_Params)

@@ -430,11 +430,12 @@ TEST_CASE("FunctionStatment", "[definition][Functions]")
             {
                 "type": "FunctionStatement",
                 "name": "test",
+                "returnType": "int",
                 "parameters": [],
                 "statements": []
             }
         )"_json;
-        lexer.scan(std::stringstream("fn test() {}"));
+        lexer.scan(std::stringstream("fn test() -> int {}"));
         auto parser = Parser(lexer.getTokens());
         std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
         REQUIRE(statements.size() == 1);
@@ -448,6 +449,7 @@ TEST_CASE("FunctionStatment", "[definition][Functions]")
             {
                 "type": "FunctionStatement",
                 "name": "test",
+                "returnType": "void",
                 "parameters": [ { "name" : "a", "type" : "int" } ],
                 "statements": []
             }
@@ -466,6 +468,7 @@ TEST_CASE("FunctionStatment", "[definition][Functions]")
             {
                 "type": "FunctionStatement",
                 "name": "test",
+                "returnType": "void",
                 "parameters": [
                     { "name" : "a", "type" : "int" },
                     { "name" : "b", "type" : "char" },

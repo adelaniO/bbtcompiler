@@ -84,12 +84,12 @@ namespace BBTCompiler
     class FuncStmt : public Stmt
     {
     public:
-        FuncStmt(Token name, std::vector<std::pair<Token,Token>> params, std::vector<std::unique_ptr<Stmt>> body)
-            : m_Name{ name }, m_Params{ std::move(params) }, m_Body{ std::move(body) }
+        FuncStmt(Token name, Token returnType, std::vector<std::pair<Token,Token>> params, std::vector<std::unique_ptr<Stmt>> body)
+            : m_Name{ name }, m_ReturnType{ returnType }, m_Params{ std::move(params) }, m_Body{ std::move(body) }
         {}
 
         void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
-        Token m_Name;
+        Token m_Name, m_ReturnType;
         std::vector<std::pair<Token,Token>> m_Params;
         std::vector<std::unique_ptr<Stmt>> m_Body;
     };

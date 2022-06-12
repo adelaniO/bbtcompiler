@@ -110,20 +110,18 @@ namespace BBTCompiler
         std::pair<Token, Token> result;
         result.first = consume(TokenType::IDENTIFIER, "Expect variable name.");
         consume(TokenType::COLON, "Expect ': <variable_type>' after variable name.");
-        if(check({ TokenType::INT, TokenType::CHAR, TokenType::BOOL, TokenType::FLOAT }))
-        {
-            result.second = advance();
-        }
-        else if(check(TokenType::IDENTIFIER))
-        {
-
-            result.second = advance();
-        }
-        else
-        {
-            throw std::runtime_error(syntaxErrorMsg("file", peek(), "Expect '<variable type>'."));
-        }
+        result.second = parseType();
         return result;
+    }
+
+    Token Parser::parseType()
+    {
+        if (check({ TokenType::INT, TokenType::CHAR, TokenType::BOOL, TokenType::FLOAT }))
+            return advance();
+        else if (check(TokenType::IDENTIFIER))
+            return advance();
+        else
+            throw std::runtime_error(syntaxErrorMsg("file", peek(), "Expect '<variable type>'."));
     }
     
     std::unique_ptr<Stmt> Parser::parseVariableDeclaration()
@@ -164,10 +162,15 @@ namespace BBTCompiler
             } while (match(TokenType::COMMA));
         }
         consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
-
+        Token returnType;
+        if(check(TokenType::RIGHT_ARROW))
+        {
+            advance();
+            returnType = parseType();
+        }
         consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + "body.");
         auto body{ parseBlock() };
-        return std::make_unique<FuncStmt>(name, std::move(parameters), std::move(body));
+        return std::make_unique<FuncStmt>(name, returnType, std::move(parameters), std::move(body));
     }
 
     std::unique_ptr<Stmt> Parser::parsePrintStatement()

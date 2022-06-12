@@ -33,7 +33,7 @@ namespace BBTCompiler
         PIPE,
         // Double Operators
         PLUS_PLUS, MINUS_MINUS, PLUS_EQ, MINUS_EQ, EQ_EQ, NOT_EQ,
-        GREATER_EQ, LESS_EQ, OR, AND,
+        GREATER_EQ, LESS_EQ, OR, AND, RIGHT_ARROW,
 
         END,
         INVALID
@@ -100,6 +100,7 @@ namespace BBTCompiler
         {"<=", TokenType::LESS_EQ},
         {"||", TokenType::OR},
         {"&&", TokenType::AND},
+        {"->", TokenType::RIGHT_ARROW},
     };
 
     struct Token

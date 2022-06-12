@@ -29,6 +29,7 @@ namespace BBTCompiler
         std::vector<std::unique_ptr<Stmt>> parseBlock();
         std::unique_ptr<Stmt> parseDeclaration();
         std::pair<Token, Token> parseNewVariable();
+        Token parseType();
         std::unique_ptr<Stmt> parseVariableDeclaration();
         std::unique_ptr<Stmt> parseStatement();
         std::unique_ptr<Stmt> parseExpressionStatement();
