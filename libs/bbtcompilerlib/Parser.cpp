@@ -138,6 +138,7 @@ namespace BBTCompiler
         if(match(TokenType::FOR)) return parseForStatement();
         if(match(TokenType::IF)) return parseIfStatement();
         if(match(TokenType::PRINT)) return parsePrintStatement();
+        if(match(TokenType::RETURN)) return parseReturnStatement();
         if(match(TokenType::WHILE)) return parseWhileStatement();
         if(match(TokenType::LEFT_BRACE)) return std::make_unique<BlockStmt>(BlockStmt{parseBlock()});
         return parseExpressionStatement();
@@ -171,6 +172,15 @@ namespace BBTCompiler
         consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + "body.");
         auto body{ parseBlock() };
         return std::make_unique<FuncStmt>(name, returnType, std::move(parameters), std::move(body));
+    }
+
+    std::unique_ptr<Stmt> Parser::parseReturnStatement()
+    {
+        Token returnKeyword = previous();
+        std::unique_ptr<Expr> value{};
+        if(!check(TokenType::SEMICOLON))
+            value = parseExpression();
+        return std::make_unique<ReturnStmt>(returnKeyword, std::move(value));
     }
 
     std::unique_ptr<Stmt> Parser::parsePrintStatement()

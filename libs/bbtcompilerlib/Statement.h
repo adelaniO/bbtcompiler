@@ -93,4 +93,16 @@ namespace BBTCompiler
         std::vector<std::pair<Token,Token>> m_Params;
         std::vector<std::unique_ptr<Stmt>> m_Body;
     };
+
+    class ReturnStmt : public Stmt
+    {
+    public:
+        ReturnStmt(Token returnToken, std::unique_ptr<Expr> value)
+            : m_ReturnToken{returnToken}, m_Value{std::move(value)}
+        {}
+
+        void accept(ASTJSonVisitor& visitor) const override { visitor.visit(*this); }
+        Token m_ReturnToken;
+        std::unique_ptr<Expr> m_Value;
+    };
 }

@@ -169,6 +169,10 @@ namespace BBTCompiler
         }
     }
 
+    void ASTJSonVisitor::visit(const ReturnStmt& stmt)
+    {
+    }
+
     const Json& ASTJSonVisitor::getJson() const { return m_Json; }
 
     void ASTJSonVisitor::print()

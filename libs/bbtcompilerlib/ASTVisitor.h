@@ -16,6 +16,7 @@ namespace BBTCompiler
     class IfStmt;
     class WhileStmt;
     class FuncStmt;
+    class ReturnStmt;
 
     class ASTConstVisitor {
     public:
@@ -33,5 +34,6 @@ namespace BBTCompiler
         virtual void visit(const IfStmt& stmt) = 0;
         virtual void visit(const WhileStmt& stmt) = 0;
         virtual void visit(const FuncStmt& stmt) = 0;
+        virtual void visit(const ReturnStmt& stmt) = 0;
     };
 }

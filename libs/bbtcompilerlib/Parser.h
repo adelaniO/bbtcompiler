@@ -34,6 +34,7 @@ namespace BBTCompiler
         std::unique_ptr<Stmt> parseStatement();
         std::unique_ptr<Stmt> parseExpressionStatement();
         std::unique_ptr<Stmt> parseFunctionStatement(const std::string& kind);
+        std::unique_ptr<Stmt> parseReturnStatement();
         std::unique_ptr<Stmt> parsePrintStatement();
         std::unique_ptr<Stmt> parseForStatement();
         std::unique_ptr<Stmt> parseWhileStatement();
