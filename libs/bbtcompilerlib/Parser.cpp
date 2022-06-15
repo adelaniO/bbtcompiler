@@ -180,6 +180,8 @@ namespace BBTCompiler
         std::unique_ptr<Expr> value{};
         if(!check(TokenType::SEMICOLON))
             value = parseExpression();
+
+        consume(TokenType::SEMICOLON, "Expect ';' after return value.");
         return std::make_unique<ReturnStmt>(returnKeyword, std::move(value));
     }
 

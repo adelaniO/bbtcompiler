@@ -171,6 +171,14 @@ namespace BBTCompiler
 
     void ASTJSonVisitor::visit(const ReturnStmt& stmt)
     {
+        auto& stmtJson{ getCurrentJson() };
+        stmtJson["type"] = "ReturnStatement";
+        auto& returnExpr{ addNestedJson("body") };
+        if(stmt.m_Value)
+        {
+            setCurrentJson(returnExpr);
+            stmt.m_Value->accept(*this);
+        }
     }
 
     const Json& ASTJSonVisitor::getJson() const { return m_Json; }

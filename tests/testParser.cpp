@@ -487,3 +487,71 @@ TEST_CASE("FunctionStatment", "[definition][Functions]")
     }
 }
 
+TEST_CASE("ReturnStatment", "[return]")
+{
+    Lexer lexer;
+    ASTJSonVisitor jsonVisitor;
+    SECTION("Empty return")
+    {
+        const auto result = R"(
+            {
+                "type": "ReturnStatement",
+                "body": {}
+            }
+        )"_json;
+        lexer.scan(std::stringstream("return;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        INFO(jsonVisitor.toString());
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+    SECTION("Return Constant")
+    {
+        const auto result = R"(
+            {
+                "type": "ReturnStatement",
+                "body": {
+                    "type": "PrimaryExpression",
+                    "value": "4"
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("return 4;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        INFO(jsonVisitor.toString());
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+    SECTION("Return Expression")
+    {
+        const auto result = R"(
+            {
+                "type": "ReturnStatement",
+                "body": {
+                    "type": "BinaryExpression",
+                    "lhs": {
+                        "type": "PrimaryExpression",
+                        "value": "2"
+                    },
+                    "operator": "*",
+                    "rhs": {
+                        "type": "PrimaryExpression",
+                        "value": "2"
+                    }
+                }
+            }
+        )"_json;
+        lexer.scan(std::stringstream("return 2*2;"));
+        auto parser = Parser(lexer.getTokens());
+        std::vector<std::unique_ptr<Stmt>>& statements{ parser.parse() };
+        REQUIRE(statements.size() == 1);
+        statements[0]->accept(jsonVisitor);
+        INFO(jsonVisitor.toString());
+        CHECK(nlohmann::json::diff(result, jsonVisitor.getJson()) == nlohmann::json::array({}));
+    }
+}
+
