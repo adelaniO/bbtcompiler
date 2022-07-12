@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <sstream>
 
 
 namespace BBTCompiler
@@ -13,6 +14,12 @@ namespace BBTCompiler
         m_Position = TokenPosition{ 1, 1 };
     }
 
+    void Lexer::scan(std::string_view file)
+    {
+        std::stringstream ss{std::string(file)};
+        scan(ss);
+    }
+    
     void Lexer::scan(std::istream& stream)
     {
         while(stream >> std::noskipws >> m_CurrentChar)
