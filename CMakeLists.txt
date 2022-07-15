@@ -22,4 +22,4 @@ target_include_directories(tests PRIVATE libs/bbtcompilerlib)
 
 include(CTest)
 include(Catch)
-catch_discover_tests(tests)
+catch_discover_tests(tests WORKING_DIRECTORY ${PROJECT_DIR})

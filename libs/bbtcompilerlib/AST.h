@@ -6,9 +6,28 @@
 #include <cassert>
 #include <nlohmann/json.hpp>
 
+#include <typeinfo>
+#include <iostream>
+
 #include "Token.h"
 
 using namespace nlohmann;
+
+namespace BBTCompiler
+{
+    class ASTException
+    {
+    private:
+        std::string m_error;
+
+    public:
+        ASTException(std::string_view error)
+            : m_error{ error }
+        {
+        }
+        const std::string& getError() const { return m_error; }
+    };
+}
 
 namespace BBTCompiler
 {
@@ -206,7 +225,13 @@ namespace BBTCompiler
         size_t size() { return m_nodes.size(); }
         ASTNode& operator[](size_t id) { return m_nodes[id]; }
         const ASTNode& operator[](size_t id) const { return m_nodes[id]; }
+        json toJson(const size_t iNode) const;
+        void nextNodeToJson(const size_t& iNode, nlohmann::json& j) const;
+        friend void to_json(json& j, const AST& tree) { j = tree.toJson(0); }
+        void includeTokenPosition(bool bV) { m_includeTokenPosition = bV; }
+
     private:
         std::vector<ASTNode> m_nodes;
+        bool m_includeTokenPosition{false};
     };
 }

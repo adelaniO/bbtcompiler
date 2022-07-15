@@ -17,7 +17,7 @@ set(
     "Parser.cpp"
     "ParserOld.cpp"
     "JsonVisitor.cpp"
-)
+ "AST.cpp")
 add_library(bbtcompilerlib ${HEADER_LIST} ${SRC_LIST})
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(bbtcompilerlib PRIVATE nlohmann_json nlohmann_json::nlohmann_json)
