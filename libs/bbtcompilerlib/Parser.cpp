@@ -146,7 +146,7 @@ namespace BBTCompiler
     {
         const size_t varDeclId{ m_Tree.createNode<VariableStmt>().getId() };
         const auto [name, type] = parseNewVariable();
-        size_t initializer{ match(TokenType::EQ) ? parseExpression() : npos() };
+        size_t initializer{ match(TokenType::EQ) ? parseExpression() : m_Tree.createNode<std::monostate>().getId() };
 
         consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
         auto& varDecl{ m_Tree.getNode<VariableStmt>(varDeclId) };
@@ -225,9 +225,12 @@ namespace BBTCompiler
 
     size_t Parser::parsePrintStatement()
     {
-        size_t expression{ parseExpression() };
+        const size_t printStmtId{ m_Tree.createNode<PrintStmt>().getId() };
+        const size_t expression{ parseExpression() };
+        auto& printStmt{ m_Tree.getNode<PrintStmt>(printStmtId) };
+        printStmt.m_expression = expression;
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
-        return expression;
+        return printStmtId;
     }
 
     size_t Parser::parseForStatement()
@@ -321,12 +324,11 @@ namespace BBTCompiler
             Token equals = previous();
             auto value = parseAssignmentExpr();
 
-            if(VariableExpr* varExpr{ m_Tree.getNodeIf<VariableExpr>(expr) } )
+            if(Token* varToken{ m_Tree.getNodeIf<Token>(expr) }; varToken->type == TokenType::IDENTIFIER )
             {
                 auto& assignNode{ m_Tree.createNode<AssignmentExpr>() };
                 auto& assignStmt{ assignNode.get<AssignmentExpr>() };
-                size_t name = varExpr->m_name;
-                assignStmt.m_name = varExpr->m_name;
+                assignStmt.m_name = expr;
                 assignStmt.m_value = value;
                 return assignNode.getId();
             }

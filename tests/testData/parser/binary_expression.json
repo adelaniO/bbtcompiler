@@ -1,23 +1,29 @@
-{
-	"type": "ExpressionStatement",
-	"expression": {
-		"lhs": {
-			"type": "BinaryExpression",
-			"lhs": {
-				"type": "PrimaryExpression",
-				"value": "1"
-			},
-			"operator": "*",
-			"rhs": {
-				"type": "PrimaryExpression",
-				"value": "2"
+[
+	[
+		{
+			"expression": {
+				"lhs": {
+					"expression": {
+						"lhs": {
+							"value": "1"
+						},
+						"operator": {
+							"value": "*"
+						},
+						"rhs": {
+							"value": "2"
+						},
+						"type": "BinaryExpr"
+					}
+				},
+				"operator": {
+					"value": "-"
+				},
+				"rhs": {
+					"value": "3"
+				},
+				"type": "BinaryExpr"
 			}
-		},
-		"type": "BinaryExpression",
-		"operator": "-",
-		"rhs": {
-			"type": "PrimaryExpression",
-			"value": "3"
 		}
-	}
-}
+	]
+]

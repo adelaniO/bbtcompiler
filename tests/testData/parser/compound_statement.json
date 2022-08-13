@@ -1,0 +1,13 @@
+{
+  "type": "BlockStatement",
+  "statements": [
+      {
+          "type": "PrintStatement",
+          "expression": { "type": "PrimaryExpression", "value": "5" }
+      },
+      {
+          "type": "PrintStatement",
+          "expression": { "type": "PrimaryExpression", "value": "10" }
+      }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "expression": {
+      "initializer": [],
+      "name": {
+        "value": "a"
+      },
+      "type": "VariableStmt",
+      "var_type": {
+        "value": "int"
+      }
+    }
+  }
+]

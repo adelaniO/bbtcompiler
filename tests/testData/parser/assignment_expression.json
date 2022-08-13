@@ -1,0 +1,15 @@
+[
+  [
+    {
+      "expression": {
+        "name": {
+          "value": "a"
+        },
+        "type": "AssignmentExpr",
+        "value": {
+          "value": "5"
+        }
+      }
+    }
+  ]
+]

@@ -10,7 +10,7 @@ namespace BBTCompiler
         if(std::holds_alternative<Token>(astNode))
         {
             const auto& node{ std::get<Token>(astNode) };
-            j = json{ {"type", "Token" }, {"value", node.value } };
+            j = json{ {"value", node.value } };
             if(m_includeTokenPosition)
             {
                 j["line"] = node.position.line;
@@ -20,36 +20,65 @@ namespace BBTCompiler
         else if(std::holds_alternative<AssignmentExpr>(astNode))
         {
             const auto& node{ std::get<AssignmentExpr>(astNode) };
+            json exprjson;
+            exprjson["type"] = "AssignmentExpr";
+            exprjson["name"] = toJson(node.m_name);
+            exprjson["value"] = toJson(node.m_value);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<BinaryExpr>(astNode))
         {
             const auto& node{ std::get<BinaryExpr>(astNode) };
-            node.m_operator;
-            node.m_right;
-            j = json{ {"type", "BinaryExpr"} };
-            j["left"] = toJson(node.m_left);
-            j["operator"] = toJson(node.m_operator);
-            j["right"] = toJson(node.m_right);
+            json exprjson;
+            exprjson["type"] = "BinaryExpr";
+            exprjson["lhs"] = toJson(node.m_left);
+            exprjson["operator"] = toJson(node.m_operator);
+            exprjson["rhs"] = toJson(node.m_right);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<UnaryExpr>(astNode))
         {
             const auto& node{ std::get<UnaryExpr>(astNode) };
+            json exprjson;
+            exprjson["type"] = "UnaryExpr";
+            exprjson["operator"] = toJson(node.m_operator);
+            exprjson["rhs"] = toJson(node.m_right);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<GroupedExpr>(astNode))
         {
             const auto& node{ std::get<GroupedExpr>(astNode) };
+            json exprjson;
+            exprjson["type"] = "GroupedExpr";
+            exprjson["expression"] = toJson(node.m_expression);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<VariableExpr>(astNode))
         {
             const auto& node{ std::get<VariableExpr>(astNode) };
+            json exprjson;
+            exprjson["type"] = "VariableExpr";
+            exprjson["name"] = toJson(node.m_name);
+            exprjson["var_type"] = toJson(node.m_type);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<CallExpr>(astNode))
         {
             const auto& node{ std::get<CallExpr>(astNode) };
+            json exprjson;
+            exprjson["type"] = "CallExpr";
+            //exprjson["name"] = toJson(node.m_args);
+            exprjson["callee"] = toJson(node.m_callee);
+            exprjson["patenthesis"] = toJson(node.m_paren);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<PrintStmt>(astNode))
         {
             const auto& node{ std::get<PrintStmt>(astNode) };
+            json exprjson;
+            exprjson["type"] = "PrintStmt";
+            exprjson["expression"] = toJson(node.m_expression);
+            j["expression"] = exprjson;
         }
         else if(std::holds_alternative<ExprStmt>(astNode))
         {
@@ -61,6 +90,12 @@ namespace BBTCompiler
         else if(std::holds_alternative<VariableStmt>(astNode))
         {
             const auto& node{ std::get<VariableStmt>(astNode) };
+            json stmtjson;
+            stmtjson["type"] = "VariableStmt";
+            stmtjson["initializer"] = toJson(node.m_initializer);
+            stmtjson["name"] = toJson(node.m_name);
+            stmtjson["var_type"] = toJson(node.m_type);
+            j["expression"] = stmtjson;
         }
         else if(std::holds_alternative<CompoundStmt>(astNode))
         {

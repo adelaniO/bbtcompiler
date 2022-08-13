@@ -1,0 +1,10 @@
+[
+  {
+    "expression": {
+      "expression": {
+        "value": "5"
+      },
+      "type": "PrintStmt"
+    }
+  }
+]
