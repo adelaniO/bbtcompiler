@@ -1,0 +1,23 @@
+{
+	"type": "ExpressionStatement",
+	"expression": {
+		"lhs": {
+			"type": "BinaryExpression",
+			"lhs": {
+				"type": "PrimaryExpression",
+				"value": "1"
+			},
+			"operator": "*",
+			"rhs": {
+				"type": "PrimaryExpression",
+				"value": "2"
+			}
+		},
+		"type": "BinaryExpression",
+		"operator": "-",
+		"rhs": {
+			"type": "PrimaryExpression",
+			"value": "3"
+		}
+	}
+}

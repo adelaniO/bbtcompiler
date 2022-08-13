@@ -59,7 +59,7 @@
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_BUILD_TYPE": "Debug",
-        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
@@ -107,6 +107,18 @@
       "displayName": "Verbose Build",
       "configurePreset": "x64-debug",
       "inherits": "verbose-build-linux"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "Test-x64-debug",
+      "configurePreset": "x64-debug",
+      "output": { "outputOnFailure": true, "verbosity": "verbose" },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false,
+        "interactiveDebugging": true
+      }
     }
   ]
 }
